@@ -1,78 +1,111 @@
+using DreamDay.Data;
 using DreamDay.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace DreamDay.Data;
-
 public class Seed
 {
-    public static void SeedData(IApplicationBuilder applicationBuilder){}
-
     public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder)
     {
         using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
         {
-                //Roles
-                var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                if (!await roleManager.RoleExistsAsync(UserRoles.Couple))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Couple));
-                if(!await roleManager.RoleExistsAsync(UserRoles.Planner))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Planner));
+            // Roles
+            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                //Users
-                var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-                string adminUserEmail = "gayan@dreamday.com";
+            if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Couple))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Couple));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Planner))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Planner));
 
-                var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
-                if (adminUser == null)
+            // Users
+            var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+            // Admin
+            string adminUserEmail = "gayan@dreamday.com";
+            var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
+            if (adminUser == null)
+            {
+                var newAdminUser = new AppUser
                 {
-                    var newAdminUser = new AppUser()
+                    UserName = adminUserEmail,
+                    Email = adminUserEmail,
+                    EmailConfirmed = true,
+                    FirstName = "Gayan",
+                    LastName = "Admin",
+                };
+                await userManager.CreateAsync(newAdminUser, "Test@123");
+                await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
+            }
+
+            // Couple
+            string coupleEmail = "couple@dreamday.com";
+            var coupleUser = await userManager.FindByEmailAsync(coupleEmail);
+            if (coupleUser == null)
+            {
+                coupleUser = new AppUser
+                {
+                    UserName = coupleEmail,
+                    Email = coupleEmail,
+                    EmailConfirmed = true,
+                    FirstName = "Couple",
+                    LastName = "One"
+                };
+                await userManager.CreateAsync(coupleUser, "Test@123");
+                await userManager.AddToRoleAsync(coupleUser, UserRoles.Couple);
+            }
+
+            // Couple Profile
+            if (!context.CoupleProfiles.Any())
+            {
+                context.CoupleProfiles.Add(new CoupleProfile
+                {
+                    AppUserId = coupleUser.Id,
+                    WeddingDate = new DateOnly(2025, 10, 10),
+                    PartnerName = "Jamie Doe"
+                });
+            }
+
+            // Planners
+            string[] plannerEmails =
+            {
+                "planner1@dreamday.com",
+                "planner2@dreamday.com",
+                "planner3@dreamday.com",
+                "planner4@dreamday.com"
+            };
+
+            for (int i = 0; i < plannerEmails.Length; i++)
+            {
+                var plannerUser = await userManager.FindByEmailAsync(plannerEmails[i]);
+                if (plannerUser == null)
+                {
+                    plannerUser = new AppUser
                     {
-                        UserName = adminUserEmail,
-                        Email = adminUserEmail,
+                        UserName = plannerEmails[i],
+                        Email = plannerEmails[i],
                         EmailConfirmed = true,
-                        FirstName = "Gayan",
-                        LastName = "Admin",
+                        FirstName = $"Planner",
+                        LastName = $"#{i + 1}"
                     };
-                    await userManager.CreateAsync(newAdminUser, "Test@123");
-                    await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
+                    await userManager.CreateAsync(plannerUser, "Test@123");
+                    await userManager.AddToRoleAsync(plannerUser, UserRoles.Planner);
                 }
 
-                string appCoupleEmail = "couple@dreamday.com";
-
-                var appUser = await userManager.FindByEmailAsync(appCoupleEmail);
-                if (appUser == null)
+                // Add planner profile if not exists
+                if (!context.PlannerProfiles.Any(p => p.AppUserId == plannerUser.Id))
                 {
-                    var newAppUser = new AppUser()
+                    context.PlannerProfiles.Add(new PlannerProfile
                     {
-                        UserName = appCoupleEmail,
-                        Email = appCoupleEmail,
-                        EmailConfirmed = true,
-                        FirstName = "Couple",
-                        LastName = "One"
-                    };
-                    await userManager.CreateAsync(newAppUser, "Test@123");
-                    await userManager.AddToRoleAsync(newAppUser, UserRoles.Couple);
+                        AppUserId = plannerUser.Id,
+                        IsApproved = (i == 0) // only first is approved
+                    });
                 }
-                
-                string appPlannerEmail = "planner@dreamday.com";
+            }
 
-                var appPlanner = await userManager.FindByEmailAsync(appPlannerEmail);
-                if (appPlanner == null)
-                {
-                    var newAppUser = new AppUser()
-                    {
-                        UserName = appPlannerEmail,
-                        Email = appPlannerEmail,
-                        EmailConfirmed = true,
-                        FirstName = "Planner",
-                        LastName = "One"
-                    };
-                    await userManager.CreateAsync(newAppUser, "Test@123");
-                    await userManager.AddToRoleAsync(newAppUser, UserRoles.Planner);
-                }
+            await context.SaveChangesAsync();
         }
     }
 }

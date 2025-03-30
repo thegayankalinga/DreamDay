@@ -14,6 +14,8 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     
     //You can  get a property by typing "prop"
     
-    // public DbSet<AppUser> AppUsers { get; set; }
-    
+    public DbSet<AppUser> AppUsers { get; set; }
+
+    public DbSet <PlannerProfile> PlannerProfiles { get; set; }
+    public DbSet <CoupleProfile> CoupleProfiles { get; set; }
 }

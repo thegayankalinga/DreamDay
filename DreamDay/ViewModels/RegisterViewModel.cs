@@ -24,4 +24,16 @@ public class RegisterViewModel
     [Required(ErrorMessage = "Please enter your last name.")]
     [Display(Name = "Last Name")]
     public string LastName { get; set; }
+    
+    // Role selection: "Couple", "Planner", or "Admin"
+    [Required(ErrorMessage = "Please select a role.")]
+    [Display(Name = "Registering As")]
+    public string Role { get; set; }
+    
+    //Partner Fields
+    [Display(Name = "Wedding Date")]
+    public DateOnly? WeddingDate { get; set; }
+    
+    [Display(Name = "Partner Name")]
+    public string? PartnerName { get; set; }
 }

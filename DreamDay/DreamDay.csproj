@@ -18,6 +18,8 @@
 
     <ItemGroup>
       <Folder Include="Data\Enumz\" />
+      <Folder Include="Interfaces\" />
+      <Folder Include="Repositories\" />
     </ItemGroup>
 
 </Project>
