@@ -41,7 +41,7 @@ public class AccountController : Controller
                 var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Dashboard");
                 }
             }
             //Password Incorrect
