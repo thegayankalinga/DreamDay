@@ -52,5 +52,39 @@ public class AccountController : Controller
         TempData["Error"] = "Invalid username or password 2";
         return View(loginViewModel);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+    {
+        if(!ModelState.IsValid) return View(registerViewModel);
+        var user = await _userManager.FindByEmailAsync(registerViewModel.EmailAddress);
+        if (user != null)
+        {
+            TempData["Error"] = "Email address already exists, Please Login";
+            return View(registerViewModel);
+        }
+
+        var newUser = new AppUser()
+        {
+            UserName = registerViewModel.EmailAddress,
+            Email = registerViewModel.EmailAddress,
+            FirstName = registerViewModel.FirstName,
+            LastName = registerViewModel.LastName,
+
+        };
+        var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
+        if (newUserResponse.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(newUser, UserRoles.Couple);
+        }
+        return RedirectToAction("Login", "Account");
+
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
     
 }
