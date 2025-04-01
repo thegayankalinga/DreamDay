@@ -75,6 +75,12 @@ public class AccountController : Controller
         return View(loginViewModel);
     }
 
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View("Register");
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
     {
