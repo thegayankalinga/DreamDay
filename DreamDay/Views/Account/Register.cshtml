@@ -1,112 +1,107 @@
-@model DreamDay.ViewModels.RegisterViewModel
+ @model DreamDay.ViewModels.RegisterViewModel
 
-@{
-    Layout = null;
-}
+ @{
+     ViewData["Title"] = "Register";
+ }
+@{Layout = "_Layout"}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Register - SB Admin</title>
-    <link href="/css/styles.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <title>Register</title>
+    
 </head>
-<body class="bg-primary">
-    <div id="layoutAuthentication">
-        <div id="layoutAuthentication_content">
-            <main>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-7">
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
-                                <div class="card-body">
-                                    <form asp-action="Register" method="post">
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input asp-for="FirstName" class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" />
-                                                    <label for="inputFirstName">First name</label>
-                                                    <span asp-validation-for="FirstName" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating">
-                                                    <input asp-for="LastName" class="form-control" id="inputLastName" type="text" placeholder="Enter your last name" />
-                                                    <label for="inputLastName">Last name</label>
-                                                    <span asp-validation-for="LastName" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="EmailAddress" class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                            <label for="inputEmail">Email address</label>
-                                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input asp-for="Password" class="form-control" id="inputPassword" type="password" placeholder="Create a password" />
-                                                    <label for="inputPassword">Password</label>
-                                                    <span asp-validation-for="Password" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input asp-for="ConfirmPassword" class="form-control" id="inputPasswordConfirm" type="password" placeholder="Confirm password" />
-                                                    <label for="inputPasswordConfirm">Confirm Password</label>
-                                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label asp-for="Role"></label>
-                                            <select asp-for="Role" class="form-control">
-                                                <option value="Couple">Couple</option>
-                                                <option value="Planner">Planner</option>
-                                                <option value="Admin">Admin</option>
-                                            </select>
-                                            <span asp-validation-for="Role" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label asp-for="WeddingDate"></label>
-                                            <input asp-for="WeddingDate" type="date" class="form-control" />
-                                            <span asp-validation-for="WeddingDate" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label asp-for="PartnerName"></label>
-                                            <input asp-for="PartnerName" class="form-control" />
-                                            <span asp-validation-for="PartnerName" class="text-danger"></span>
-                                        </div>
+<body>
+<div>
+    <h2>Register</h2>
 
-                                        @if (TempData["Error"] != null)
-                                        {
-                                            <div class="alert alert-danger" role="alert">
-                                                @TempData["Error"]
-                                            </div>
-                                        }
-
-                                        <div class="mt-4 mb-0">
-                                            <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">Create Account</button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center py-3">
-                                    <div class="small"><a asp-action="Login" asp-controller="Account">Have an account? Go to login</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+            <a href="@Url.Action("Login", "Account")" class="btn btn-primary mt-2">Go to Login</a>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="/js/scripts.js"></script>
+    }
+    else
+    {
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="EmailAddress"></label>
+                <input asp-for="EmailAddress" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Role"></label>
+                <select asp-for="Role" class="form-control" onchange="toggleRoleFields(this.value)">
+                    <option value="">-- Select Role --</option>
+                    <option value="couple">Couple</option>
+                    <option value="planner">Planner</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
+            <!-- Couple Only Fields -->
+            <div id="coupleFields" style="display:none;">
+                <div class="form-group">
+                    <label asp-for="WeddingDate"></label>
+                    <input asp-for="WeddingDate" type="date" class="form-control" />
+                    <span asp-validation-for="WeddingDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PartnerName"></label>
+                    <input asp-for="PartnerName" class="form-control" />
+                    <span asp-validation-for="PartnerName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    }
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script>
+            function toggleRoleFields(role) {
+                const coupleFields = document.getElementById("coupleFields");
+                coupleFields.style.display = (role === "couple") ? "block" : "none";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const selectedRole = document.querySelector("[name='Role']").value;
+                toggleRoleFields(selectedRole);
+            });
+        </script>
+    }
+
+</div>
+
 </body>
 </html>

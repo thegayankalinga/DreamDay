@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DreamDay")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d15b550f1990cce61706959895df0132347af508")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1b146ad3f706f8e188c0028cc12780ddcd214b4")]
 [assembly: System.Reflection.AssemblyProductAttribute("DreamDay")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DreamDay")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
