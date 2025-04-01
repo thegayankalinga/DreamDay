@@ -30,6 +30,12 @@ public class AccountController : Controller
         return View(response);
     }
 
+        public IActionResult Register()
+        {
+            var response = new RegisterViewModel();
+            return View(response);
+        }
+
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel loginViewModel)
     {
@@ -55,22 +61,20 @@ public class AccountController : Controller
                         }
                     }
                     Console.WriteLine("Login successful!");
-                    
+
                     if (roles.Contains(UserRoles.Planner))
-                        return RedirectToAction("PlannerDashboard", "Dashboard");
+                        return RedirectToAction("Index", "Planner", new { area = "Dashboard" });
 
                     if (roles.Contains(UserRoles.Couple))
-                        return RedirectToAction("CoupleDashboard", "Dashboard");
-                    
-                    if(roles.Contains(UserRoles.Admin))
-                        return RedirectToAction("AdminDashboard", "Dashboard");
+                        return RedirectToAction("Index", "Couple", new { area = "Dashboard" });
+
+                    if (roles.Contains(UserRoles.Admin))
+                        return RedirectToAction("Index", "Admin", new { area = "Dashboard" });
                 }
             }
-            //Password Incorrect
             TempData["Error"] = "Invalid username or password 1";
             return View(loginViewModel);
         }
-        //User Not Found
         TempData["Error"] = "Invalid username or password 2";
         return View(loginViewModel);
     }
