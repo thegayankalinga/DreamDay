@@ -1,0 +1,27 @@
+﻿@model List<PlannerProfile>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+    <ul>
+        @foreach (var planner in Model)
+        {
+            <li>
+                <strong>@planner.AppUser.FirstName @planner.AppUser.LastName</strong><br />
+                Email: @planner.AppUser.Email<br />
+                Approved: @planner.IsApproved
+            </li>
+        }
+    </ul>
+</div>
+</body>
+</html>

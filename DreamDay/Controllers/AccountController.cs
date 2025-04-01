@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DreamDay.Data;
 using DreamDay.Models;
 using DreamDay.ViewModels;
@@ -53,7 +54,16 @@ public class AccountController : Controller
                             return View(loginViewModel);
                         }
                     }
-                    return RedirectToAction("Index", "Dashboard");
+                    Console.WriteLine("Login successful!");
+                    
+                    if (roles.Contains(UserRoles.Planner))
+                        return RedirectToAction("PlannerDashboard", "Dashboard");
+
+                    if (roles.Contains(UserRoles.Couple))
+                        return RedirectToAction("CoupleDashboard", "Dashboard");
+                    
+                    if(roles.Contains(UserRoles.Admin))
+                        return RedirectToAction("AdminDashboard", "Dashboard");
                 }
             }
             //Password Incorrect
@@ -137,20 +147,20 @@ public class AccountController : Controller
     }
 
     //View All Planners
-    [Authorize(Roles = UserRoles.Admin)]
-    public Task<IActionResult> GetPlannerProfiles()
+    // [Authorize(Roles = UserRoles.Admin)]
+    public IActionResult GetPlannerProfiles()
     {
         {
             var planners = _context.PlannerProfiles
-                .Where(p => !p.IsApproved)
+                // .Where(p => !p.IsApproved)
                 .Include(p => p.AppUser)
                 .ToList();
-            return View(planners);
+            return View("Planner/ListOfPlanners", planners);
         } 
     }
     
     [HttpPost]
-    [Authorize(Roles = UserRoles.Admin)]
+    //[Authorize(Roles = UserRoles.Admin)]
     public IActionResult ApprovePlanner(string plannerId)
     {
         var planner = _context.PlannerProfiles.FirstOrDefault(p => p.AppUserId == plannerId);

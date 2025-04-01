@@ -20,6 +20,8 @@
       <Folder Include="Data\Enumz\" />
       <Folder Include="Interfaces\" />
       <Folder Include="Repositories\" />
+      <Folder Include="Views\Admin\" />
+      <Folder Include="Views\Planner\" />
     </ItemGroup>
 
 </Project>
