@@ -37,7 +37,8 @@ namespace DreamDay.Controllers.Dashboard
             //     .ThenInclude(cp => cp.WeddingChecklists)
             //     .FirstOrDefaultAsync(u => u.Id == userId);
             
-            var coupleProfile = await _context.CoupleProfiles.Include(cp => cp.AppUser).FirstOrDefaultAsync(cp => cp.AppUserId == user.Id);
+            var coupleProfile = await _context.CoupleProfiles.Include(cp => cp.AppUser)
+                .Include(coupleProfile => coupleProfile.WeddingChecklists).FirstOrDefaultAsync(cp => cp.AppUserId == user.Id);
             var role = await _userManager.GetRolesAsync(user);
             if (coupleProfile == null && !role.Contains(UserRoles.Couple) )
             {
@@ -51,16 +52,48 @@ namespace DreamDay.Controllers.Dashboard
                 
                 FullCoupleName = $"{coupleProfile.PartnerName} & {appUser.FirstName}",
                 WeddingDate = coupleProfile.WeddingDate,
-                WeddingChecklists = coupleProfile.WeddingChecklists ?? new List<WeddingChecklist>()
+                WeddingChecklists = await _context.WeddingChecklists.Include(cp => cp.AppUser).ToListAsync()
+                
             };
 
             return View(vm);
         
     }
 
-    public IActionResult Create()
+    [HttpGet]
+    public async Task<IActionResult> Create()
     {
-        return View("CreateChecklist");
+        var user = await _userManager.GetUserAsync(User);
+        var appUser = await _context.AppUsers.FirstOrDefaultAsync(x => x.Id == user.Id);
+        
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        // var user = await _userManager.Users
+        //     .Include(u => u.CoupleProfile)
+        //     .ThenInclude(cp => cp.WeddingChecklists)
+        //     .FirstOrDefaultAsync(u => u.Id == userId);
+            
+        var coupleProfile = await _context.CoupleProfiles.Include(cp => cp.AppUser).FirstOrDefaultAsync(cp => cp.AppUserId == user.Id);
+        var role = await _userManager.GetRolesAsync(user);
+        if (coupleProfile == null && !role.Contains(UserRoles.Couple) )
+        {
+            Console.WriteLine("Couple profile not found");
+            return RedirectToAction("Create", "Couple");
+        }
+
+            
+        var vm = new WeddingChecklistViewModel()
+        {
+                
+            CoupleFullName = $"{coupleProfile.PartnerName} & {appUser.FirstName}",
+            CoupleProfile = coupleProfile,
+            
+        };
+        
+        return View("CreateChecklist", vm);
     }
 
     [HttpPost]
@@ -81,6 +114,7 @@ namespace DreamDay.Controllers.Dashboard
             AppUserId = user.Id,
             Title = checklistViewModel.Title,
             CreatedDate = checklistViewModel.CreatedAt,
+            
 
         };
 
@@ -88,7 +122,13 @@ namespace DreamDay.Controllers.Dashboard
         return RedirectToAction("Index");
     }
 
-   
+    [HttpGet]
+    public async Task<IActionResult> AddItem()
+    {
+        WeddingChecklistViewModel checklistViewModel = new WeddingChecklistViewModel();
+       // checklistViewModel = await  _repository.
+        return View("WeddingChecklistDetails", checklistViewModel);
+    }
 
     [HttpPost]
     public async Task<IActionResult> AddItem(WeddingChecklistItem item)

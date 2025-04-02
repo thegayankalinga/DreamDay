@@ -1,17 +1,23 @@
 ﻿@model DreamDay.ViewModels.WeddingChecklistViewModel
+
 @{
-    ViewData["Title"] = "Create New Checklist";
-    Layout = "_Dashboard";
+    Layout = "_Dashboard"; // Specify the layout
+    ViewData["Title"] = "Couple Dashboard"; // Set the page title
 }
 
-<h2>Create a New Wedding Checklist</h2>
+<main>
+    <h1 class="mb-1">Welcome, @Model.CoupleProfile.AppUser.FirstName & @Model.CoupleProfile.PartnerName!</h1>
+    <p class="text-muted">Wedding Date: @Model.CoupleProfile.WeddingDate.ToString("MMMM dd, yyyy")</p>
 
-<form asp-controller="Couple" asp-action="CreateChecklist" method="post" class="mt-4">
-    <div class="form-group mb-3">
-        <label asp-for="Title" class="form-label">Checklist Title</label>
-        <input asp-for="Title" class="form-control" placeholder="e.g., Main Wedding Tasks" required />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Create Checklist</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-</form>
+    <h2 class="mt-4">Create a New Wedding Checklist</h2>
+
+    <form asp-controller="Couple" asp-action="CreateChecklist" method="post" class="mt-4">
+        <div class="form-group mb-3">
+            <label asp-for="Title" class="form-label">Checklist Title</label>
+            <input asp-for="Title" class="form-control" placeholder="e.g., Main Wedding Tasks" required />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Create Checklist</button>
+        <a asp-action="CreateChecklist" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</main>

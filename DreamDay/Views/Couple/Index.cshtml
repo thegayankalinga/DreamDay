@@ -16,8 +16,8 @@
                 <div class="card-body">
                     <h4 class="card-title">✅ Customizable Wedding Checklist</h4>
                     <p class="card-text">Add, remove, or edit your wedding tasks.</p>
-                    <a asp-controller = "Couple" asp-action="CreateChecklist" class="btn btn-outline-primary mb-3">+ Add New Checklist</a>
-
+                    <a asp-controller = "Couple" asp-action="Create" class="btn btn-outline-primary mb-3">+ Add New Checklist</a>
+                    <hr />
                     <a asp-controller="Couple" asp-action="Details" class="btn btn-primary">Manage Checklists</a>
                     <hr />
                     @if (Model.WeddingChecklists.Any())

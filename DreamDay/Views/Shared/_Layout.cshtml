@@ -7,7 +7,7 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DreamDay.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0Hhonpy0aDPbj/ojhUD4PILFnvJeYB9uKGjKgV39pcWUUcrggQfqPtAOzMAi8BuiGwtiLFVqq61ig==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -29,7 +29,7 @@
                         </li>
                     </ul>
                     <ul class="navbar-nav">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity is { IsAuthenticated: true })
                         {
                             <li class="nav-item">
                                 <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">

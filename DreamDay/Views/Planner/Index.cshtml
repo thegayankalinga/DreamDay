@@ -1,75 +1,13 @@
-﻿@model DreamDay.ViewModels.CoupleDashboardViewModel
-
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @{
-    Layout = "_Dashboard";
-    ViewData["Title"] = "Couple Dashboard";
+    Layout = "_Dashboard"; // Specify the layout
+    ViewData["Title"] = "Couple Dashboard"; // Set the page title
 }
 
-<main class="container mt-4">
-    <h1 class="mb-1">Welcome, @Model.FullCoupleName!</h1>
-    <p class="text-muted">Wedding Date: @Model.WeddingDate.ToString("MMMM dd, yyyy")</p>
+<main>
+    <h1>Planner Dashboard</h1>
+    <p>Welcome to the Planner Dashboard!</p>
 
-    <div class="row mt-4">
-        <!-- ✅ Customizable Wedding Checklist -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">✅ Customizable Wedding Checklist</h4>
-                    <p class="card-text">Add, remove, or edit your wedding tasks.</p>
-                    <a asp-controller="WeddingChecklist" asp-action="Index" class="btn btn-primary">Manage Checklists</a>
-                    <hr />
-                    @if (Model.WeddingChecklists.Any())
-                    {
-                        <h6>Recent Checklists:</h6>
-                        <ul class="list-group">
-                            @foreach (var checklist in Model.WeddingChecklists.Take(3))
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    @checklist.Title
-                                    <a asp-controller="WeddingChecklist" asp-action="Details" asp-route-id="@checklist.Id" class="btn btn-sm btn-outline-secondary">Open</a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No checklists created yet.</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- 👥 Guest List -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">👥 Guest List Management</h4>
-                    <p class="card-text">Create and track RSVPs, meal preferences, and seating arrangements.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 💰 Budget Tracker -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">💰 Budget Tracker</h4>
-                    <p class="card-text">Track your wedding expenses and stay on budget.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 📅 Timeline -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">📅 Timeline Management</h4>
-                    <p class="card-text">Plan and visualize your wedding day schedule.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>

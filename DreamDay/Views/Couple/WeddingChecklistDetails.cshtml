@@ -1,7 +1,8 @@
 ﻿@model DreamDay.ViewModels.WeddingChecklistViewModel
 @{
-    ViewData["Title"] = $"Checklist: {Model.Title}";
     Layout = "_Dashboard";
+    ViewData["Title"] = $"Checklist: {Model.Title}";
+   
 }
 
 <main class="container mt-4">
@@ -32,33 +33,36 @@
 
     <!-- Checklist Items -->
     <div class="row">
-        @foreach (var item in Model.Items.OrderBy(i => i.DueDate))
+        @if (Model.Items != null)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100 @(item.IsCompleted ? "border-success" : "")">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text">@item.Description</p>
-                        @if (item.DueDate.HasValue)
-                        {
-                            <p class="text-muted small">Due: @item.DueDate.Value.ToString("MMM dd, yyyy")</p>
-                        }
+            foreach (var item in Model.Items.OrderBy(i => i.DueDate))
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm h-100 @(item.IsCompleted ? "border-success" : "")">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p class="card-text">@item.Description</p>
+                            @if (item.DueDate.HasValue)
+                            {
+                                <p class="text-muted small">Due: @item.DueDate.Value.ToString("MMM dd, yyyy")</p>
+                            }
 
-                        <div class="d-flex justify-content-between">
-                            <form asp-action="ToggleComplete" method="post" class="me-1">
-                                <input type="hidden" name="itemId" value="@item.Id" />
-                                <button class="btn btn-sm @(item.IsCompleted ? "btn-success" : "btn-outline-success")">
-                                    @(item.IsCompleted ? "✔ Completed" : "Mark Complete")
-                                </button>
-                            </form>
-                            <form asp-action="DeleteItem" method="post">
-                                <input type="hidden" name="itemId" value="@item.Id" />
-                                <button class="btn btn-sm btn-danger">🗑 Delete</button>
-                            </form>
+                            <div class="d-flex justify-content-between">
+                                <form asp-action="ToggleComplete" method="post" class="me-1">
+                                    <input type="hidden" name="itemId" value="@item.Id"/>
+                                    <button class="btn btn-sm @(item.IsCompleted ? "btn-success" : "btn-outline-success")">
+                                        @(item.IsCompleted ? "✔ Completed" : "Mark Complete")
+                                    </button>
+                                </form>
+                                <form asp-action="DeleteItem" method="post">
+                                    <input type="hidden" name="itemId" value="@item.Id"/>
+                                    <button class="btn btn-sm btn-danger">🗑 Delete</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
 </main>
