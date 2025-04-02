@@ -7,4 +7,6 @@ public class PlannerProfile
     public AppUser AppUser { get; set; }
 
     public bool IsApproved { get; set; }
+    
+    public ICollection<CoupleProfile> AssignedCoupleProfiles { get; set; }
 }

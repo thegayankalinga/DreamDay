@@ -1,0 +1,64 @@
+﻿@model DreamDay.ViewModels.WeddingChecklistViewModel
+@{
+    ViewData["Title"] = $"Checklist: {Model.Title}";
+    Layout = "_Dashboard";
+}
+
+<main class="container mt-4">
+    <h2>@Model.Title</h2>
+
+    <!-- Add New Task Form -->
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title">Add New Task</h5>
+            <form asp-action="AddItem" method="post" class="row g-3">
+                <input type="hidden" name="WeddingChecklistId" value="@Model.Id" />
+
+                <div class="col-md-4">
+                    <input asp-for="NewItem.Title" class="form-control" placeholder="Task title..." required />
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="NewItem.DueDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="NewItem.Description" class="form-control" placeholder="Optional note" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checklist Items -->
+    <div class="row">
+        @foreach (var item in Model.Items.OrderBy(i => i.DueDate))
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100 @(item.IsCompleted ? "border-success" : "")">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text">@item.Description</p>
+                        @if (item.DueDate.HasValue)
+                        {
+                            <p class="text-muted small">Due: @item.DueDate.Value.ToString("MMM dd, yyyy")</p>
+                        }
+
+                        <div class="d-flex justify-content-between">
+                            <form asp-action="ToggleComplete" method="post" class="me-1">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <button class="btn btn-sm @(item.IsCompleted ? "btn-success" : "btn-outline-success")">
+                                    @(item.IsCompleted ? "✔ Completed" : "Mark Complete")
+                                </button>
+                            </form>
+                            <form asp-action="DeleteItem" method="post">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <button class="btn btn-sm btn-danger">🗑 Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</main>

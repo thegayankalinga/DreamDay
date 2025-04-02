@@ -7,8 +7,8 @@ public class CoupleProfile
     public int Id { get; set; }
 
     [ForeignKey("AppUser")]
-    public string? AppUserId { get; set; }      // Points to the couple user
-    public AppUser? AppUser { get; set; }
+    public string AppUserId { get; set; }      // Points to the couple user
+    public AppUser AppUser { get; set; }
 
     [ForeignKey("Planner")]
     public string? PlannerId { get; set; }     // Points to the assigned planner
@@ -16,4 +16,6 @@ public class CoupleProfile
 
     public DateOnly WeddingDate { get; set; }
     public string PartnerName { get; set; }
+    
+    public ICollection<WeddingChecklist>? WeddingChecklists { get; set; }
 }

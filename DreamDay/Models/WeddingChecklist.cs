@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DreamDay.Models;
 
-public class WeddingChecklists
+public class WeddingChecklist
 {
     [Key]
     public int Id { get; set; }
