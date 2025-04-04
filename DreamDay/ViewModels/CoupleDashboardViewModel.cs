@@ -4,9 +4,9 @@ namespace DreamDay.ViewModels;
 
 public class CoupleDashboardViewModel
 {
-    public string FullCoupleName { get; set; }
+    public required string FullCoupleName { get; set; }
     public DateOnly WeddingDate { get; set; }
-    public IEnumerable<WeddingChecklist> WeddingChecklists { get; set; }
+    public List<Checklist> Checklists { get; set; } = new List<Checklist>();
 
     // Future features placeholders
     public bool IsGuestListReady => false;

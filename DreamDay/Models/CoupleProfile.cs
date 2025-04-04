@@ -17,5 +17,5 @@ public class CoupleProfile
     public DateOnly WeddingDate { get; set; }
     public string PartnerName { get; set; }
     
-    public ICollection<WeddingChecklist>? WeddingChecklists { get; set; }
+    public ICollection<Checklist>? WeddingChecklists { get; set; }
 }

@@ -23,6 +23,13 @@ public class AccountController : Controller
     }
     
     // GET (If you do not specify the [HttpGet] it is always get
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+    
+    #region "Login"
+    
     public IActionResult Login()
     {
         //This will hold the value if refreshed the page
@@ -30,6 +37,7 @@ public class AccountController : Controller
         return View(response);
     }
 
+    
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel loginViewModel)
     {
@@ -57,13 +65,13 @@ public class AccountController : Controller
                     Console.WriteLine("Login successful!");
 
                     if (roles.Contains(UserRoles.Planner))
-                        return RedirectToAction("Index", "Planner", new { area = "Dashboard" });
+                        return RedirectToAction("Index", "Planner");
 
                     if (roles.Contains(UserRoles.Couple))
-                        return RedirectToAction("Index", "Couple", new { area = "Dashboard" });
+                        return RedirectToAction("Index", "Couple");
 
                     if (roles.Contains(UserRoles.Admin))
-                        return RedirectToAction("Index", "Admin", new { area = "Dashboard" });
+                        return RedirectToAction("Index", "Admin");
                 }
             }
             //Password Incorrect
@@ -74,7 +82,16 @@ public class AccountController : Controller
         TempData["Error"] = "Invalid username or password 2";
         return View(loginViewModel);
     }
-
+    
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+    
+    #endregion
+    
+    #region "Register"
     [HttpGet]
     public IActionResult Register()
     {
@@ -120,12 +137,13 @@ public class AccountController : Controller
             {
                 case UserRoles.Couple:
                     await _userManager.AddToRoleAsync(newUser, UserRoles.Couple);
-                    _context.CoupleProfiles.Add(new CoupleProfile
-                    {
-                        AppUserId = newUser.Id,
-                        WeddingDate = registerViewModel.WeddingDate.Value,
-                        PartnerName = registerViewModel.PartnerName
-                    });
+                    if (registerViewModel.WeddingDate is not null && registerViewModel.PartnerName is not null)
+                        _context.CoupleProfiles.Add(new CoupleProfile
+                        {
+                            AppUserId = newUser.Id,
+                            WeddingDate = registerViewModel.WeddingDate.Value,
+                            PartnerName = registerViewModel.PartnerName
+                        });
                     break;
 
                 case UserRoles.Planner:
@@ -145,12 +163,9 @@ public class AccountController : Controller
         return RedirectToAction("Login", "Account");
 
     }
-
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
-    }
+    
+    #endregion
+    
 
     //View All Planners
     // [Authorize(Roles = UserRoles.Admin)]

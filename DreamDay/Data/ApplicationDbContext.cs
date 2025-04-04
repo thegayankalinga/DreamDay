@@ -15,17 +15,23 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        // Checklist
+        modelBuilder.Entity<Checklist>()
+            .HasMany(c => c.Items)
+            .WithOne(i => i.Checklist)
+            .HasForeignKey(i => i.Id)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<WeddingChecklistItem>()
-            .HasOne(i => i.WeddingChecklist)
+        modelBuilder.Entity<ChecklistItem>()
+            .HasOne(i => i.Checklist)
             .WithMany(c => c.Items)
             .HasForeignKey(i => i.WeddingChecklistId)
             .OnDelete(DeleteBehavior.Cascade); // Allow cascade here
 
-        modelBuilder.Entity<WeddingChecklistItem>()
+        modelBuilder.Entity<ChecklistItem>()
             .HasOne<AppUser>() // or your actual User model
             .WithMany()
-            .HasForeignKey(i => i.UserId)
             .OnDelete(DeleteBehavior.Restrict); // Prevent cascade to avoid conflict
         
         // One-to-One: AppUser (as couple) <--> CoupleProfile
@@ -51,7 +57,7 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     public DbSet <PlannerProfile> PlannerProfiles { get; set; }
     public DbSet <CoupleProfile> CoupleProfiles { get; set; }
     
-    public DbSet<WeddingChecklist> WeddingChecklists { get; set; }
-    public DbSet<WeddingChecklistItem> WeddingChecklistItems { get; set; }
+    public DbSet<Checklist> Checklists { get; set; }
+    public DbSet<ChecklistItem> ChecklistItems { get; set; }
 
 }

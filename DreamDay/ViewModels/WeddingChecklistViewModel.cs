@@ -11,6 +11,6 @@ public class WeddingChecklistViewModel
     public string Title { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public WeddingChecklistItem? NewItem { get; set; } // 👈 for the form
-    public ICollection<WeddingChecklistItem>? Items { get; set; }
+    public ChecklistItem? NewItem { get; set; } // 👈 for the form
+    public ICollection<ChecklistItem>? Items { get; set; }
 }

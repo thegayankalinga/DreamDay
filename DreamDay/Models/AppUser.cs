@@ -10,4 +10,5 @@ public class AppUser: IdentityUser
     public CoupleProfile? CoupleProfile { get; set; }
     
     public ICollection<CoupleProfile>? AssignedCoupleProfiles { get; set; }
+    public ICollection<Checklist>? AssignedChecklists { get; set; }
 }

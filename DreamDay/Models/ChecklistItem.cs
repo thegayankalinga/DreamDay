@@ -3,24 +3,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DreamDay.Models;
 
-public class WeddingChecklistItem
+public class ChecklistItem
 {
     [Key]
     public int Id { get; set; }
     
-    [ForeignKey("AppUser")]
-    public string? UserId { get; set; }
-    public AppUser AppUser { get; set; }
-    
-    [ForeignKey("WeddingChecklist")]
+    [ForeignKey("Checklist")]
     public int WeddingChecklistId { get; set; }
-    public WeddingChecklist WeddingChecklist { get; set; }
+    public required Checklist Checklist { get; set; }
     
-    public string Title { get; set; }
-    public string Description { get; set; }
+    [MaxLength(100)]
+    public required string Title { get; set; }
+    
+    [MaxLength(255)]
+    public string? Description { get; set; }
     
     public DateTime? DueDate { get; set; }
-    public DateTime CheckInDate { get; set; }
+    public DateTime? CheckInDate { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     
     public bool IsCompleted { get; set; }
