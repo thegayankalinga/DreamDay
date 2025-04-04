@@ -2,7 +2,7 @@
 
 namespace DreamDay.Views.Couple;
 
-public class WeddingChecklistDetails : PageModel
+public class ChecklistDetail : PageModel
 {
     public void OnGet()
     {

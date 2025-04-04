@@ -1,0 +1,63 @@
+﻿@model ChecklistItem
+
+@{
+    ViewBag.Title = "Add New Checklist Item";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Add New Item to Checklist</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateItem" method="post">
+                        <input type="hidden" asp-for="WeddingChecklistId" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Title</label>
+                            <input asp-for="Title" class="form-control" required maxlength="100" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" maxlength="255"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DueDate" class="form-label">Due Date</label>
+                                <input asp-for="DueDate" type="date" class="form-control" />
+                                <span asp-validation-for="DueDate" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CheckInDate" class="form-label">Check-in Date</label>
+                                <input asp-for="CheckInDate" type="date" class="form-control" />
+                                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsCompleted" class="form-check-input" />
+                            <label asp-for="IsCompleted" class="form-check-label">Mark as completed</label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Items" asp-route-id="@Model.WeddingChecklistId" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Items
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

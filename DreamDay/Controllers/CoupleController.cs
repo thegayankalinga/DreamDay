@@ -55,32 +55,35 @@ namespace DreamDay.Controllers.Dashboard
         
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Create()
-    {
-        var coupleProfile = _userProfileRepository.CoupleProfile;
-        // var user = await _userManager.GetUserAsync(User);
-        // var appUser = await _context.AppUsers.FirstOrDefaultAsync(x => x.Id == user.Id);
-        //
-        // if (user == null)
-        // {
-        //     return Unauthorized();
-        // }
-        //
-        // // var user = await _userManager.Users
-        // //     .Include(u => u.CoupleProfile)
-        // //     .ThenInclude(cp => cp.WeddingChecklists)
-        // //     .FirstOrDefaultAsync(u => u.Id == userId);
-        //     
-        // var coupleProfile = await _context.CoupleProfiles.Include(cp => cp.AppUser).FirstOrDefaultAsync(cp => cp.AppUserId == user.Id);
-        // var role = await _userManager.GetRolesAsync(user);
-        // if (coupleProfile == null && !role.Contains(UserRoles.Couple) )
-        // {
-        //     Console.WriteLine("Couple profile not found");
-        //     return RedirectToAction("Create", "Couple");
-        // }
+   
 
-            
+    #region Checklists
+
+    //View Checklists (All)
+    public async Task<IActionResult> Checklists()
+    {
+        
+        var currentUser = _userProfileRepository.CurrentUser;
+        if (currentUser is null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        var checklists = await _checklistRepository.GetAllChecklistsByUserAsync(currentUser.Id);
+        return View("ViewChecklists", checklists);
+    }
+    
+    [HttpGet]
+    public IActionResult Create()
+    { 
+        
+        var coupleProfile = _userProfileRepository.CoupleProfile;
+        var currentUser = _userProfileRepository.CurrentUser;
+
+        if (coupleProfile == null || currentUser == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        
         var vm = new WeddingChecklistViewModel()
         {
                 
@@ -89,8 +92,11 @@ namespace DreamDay.Controllers.Dashboard
             
         };
         
-        return View("CreateChecklist", vm);
+        return View("CreateChecklist");
     }
+
+    #endregion
+  
 
     // [HttpPost]
     // public async Task<IActionResult> CreateChecklist(WeddingChecklistViewModel checklistViewModel)

@@ -18,7 +18,7 @@
                     <p class="card-text">Add, remove, or edit your wedding tasks.</p>
                     <a asp-controller="Couple" asp-action="Create" class="btn btn-outline-primary me-3">Add +</a>
                     
-                    <a asp-controller="Couple" asp-action="Details" class="btn btn-primary">Manage Checklists</a>
+                    <a asp-controller="Couple" asp-action="Checklists" class="btn btn-primary">Manage Checklists</a>
                     <hr/>
                     @if (Model.Checklists.Any())
                     {
