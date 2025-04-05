@@ -1,8 +1,8 @@
-using System.Security.Claims;
+
 using DreamDay.Data;
 using DreamDay.Models;
 using DreamDay.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +33,8 @@ public class AccountController : Controller
     public IActionResult Login()
     {
         //This will hold the value if refreshed the page
-        var response = new LoginViewModel();
-        return View(response);
+       
+        return View();
     }
 
     
@@ -180,17 +180,17 @@ public class AccountController : Controller
         } 
     }
     
-    [HttpPost]
-    //[Authorize(Roles = UserRoles.Admin)]
-    public IActionResult ApprovePlanner(string plannerId)
-    {
-        var planner = _context.PlannerProfiles.FirstOrDefault(p => p.AppUserId == plannerId);
-        if (planner != null)
-        {
-            planner.IsApproved = true;
-            _context.SaveChanges();
-        }
-        return RedirectToAction("ApprovePlanners");
-    }
+    // [HttpPost]
+    // //[Authorize(Roles = UserRoles.Admin)]
+    // public IActionResult ApprovePlanner(string plannerId)
+    // {
+    //     var planner = _context.PlannerProfiles.FirstOrDefault(p => p.AppUserId == plannerId);
+    //     if (planner != null)
+    //     {
+    //         planner.IsApproved = true;
+    //         _context.SaveChanges();
+    //     }
+    //     return RedirectToAction("ApprovePlanners");
+    // }
     
 }

@@ -1,6 +1,7 @@
-using DreamDay.Data;
 using DreamDay.Models;
 using Microsoft.AspNetCore.Identity;
+
+namespace DreamDay.Data;
 
 public class Seed
 {

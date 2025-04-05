@@ -85,14 +85,6 @@ namespace DreamDay.Controllers
             return RedirectToAction("Index", "Home");
         }
         
-        var vm = new WeddingChecklistViewModel()
-        {
-                
-            CoupleFullName = "",
-            CoupleProfile = coupleProfile,
-            
-        };
-        
         return View("CreateChecklist");
     }
     
@@ -151,7 +143,7 @@ namespace DreamDay.Controllers
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteChecklist(int id)
     {
-        var result = await _checklistRepository.DeleteChecklistAsync(id);
+        await _checklistRepository.DeleteChecklistAsync(id);
         return RedirectToAction("Checklists");
     }
     
@@ -273,7 +265,7 @@ namespace DreamDay.Controllers
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteItem(int id)
     {
-        var result = await _itemRepository.DeleteChecklistItem(id);
+        await _itemRepository.DeleteChecklistItem(id);
         return RedirectToAction("Checklists");
     }
 

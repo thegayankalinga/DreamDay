@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace DreamDay.Controllers.Dashboard
+namespace DreamDay.Controllers
 {
     public class PlannerController : Controller
     {

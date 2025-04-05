@@ -2,10 +2,9 @@ using DreamDay.Data;
 using DreamDay.Interfaces;
 using DreamDay.Models;
 using DreamDay.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

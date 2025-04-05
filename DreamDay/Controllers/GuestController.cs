@@ -32,13 +32,13 @@ public class GuestController : Controller
     
     //Get for Guest Creation
     [HttpGet]
-    public async Task<IActionResult> CreateGuest()
+    public Task<IActionResult> CreateGuest()
     {
         var currentUser = _userProfileRepository.CurrentUser;
         var coupleProfile = _userProfileRepository.CoupleProfile;
         
-        if(currentUser == null) return RedirectToAction("Login", "Account");
-        if(coupleProfile == null) return RedirectToAction("Login", "Account");
+        if(currentUser == null) return Task.FromResult<IActionResult>(RedirectToAction("Login", "Account"));
+        if(coupleProfile == null) return Task.FromResult<IActionResult>(RedirectToAction("Login", "Account"));
 
         Guest guest = new Guest
         {
@@ -55,7 +55,7 @@ public class GuestController : Controller
         ViewBag.MealOptions = new SelectList(Enum.GetValues(typeof(MealPreferenceTypes)));
 
         
-        return View("CreateGuest", guest);
+        return Task.FromResult<IActionResult>(View("CreateGuest", guest));
         
         
     }
@@ -114,7 +114,7 @@ public class GuestController : Controller
     [HttpPost]
     public async Task<IActionResult> EditGuest(Guest guest)
     {
-        var result = await _guestRepository.UpdateGuestAsync(guest, guest.Id);
+        await _guestRepository.UpdateGuestAsync(guest, guest.Id);
 
         return RedirectToAction("index");
     }

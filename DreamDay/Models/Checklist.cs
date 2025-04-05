@@ -9,6 +9,7 @@ public class Checklist
     public int Id { get; init; }
     
     [ForeignKey("AppUser")]
+    [MaxLength(450)]
     public required string AppUserId { get; set; }
     public required AppUser AppUser { get; set; }
     

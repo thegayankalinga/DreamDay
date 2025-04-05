@@ -16,8 +16,8 @@
         @foreach (var planner in Model)
         {
             <li>
-                <strong>@planner.AppUser.FirstName @planner.AppUser.LastName</strong><br />
-                Email: @planner.AppUser.Email<br />
+                <strong>@planner.AppUser?.FirstName @planner.AppUser?.LastName</strong><br />
+                Email: @planner.AppUser?.Email<br />
                 Approved: @planner.IsApproved
             </li>
         }

@@ -6,9 +6,9 @@ public class LoginViewModel
 {
     [Display(Name = "Email Address")]
     [Required(ErrorMessage = "Please enter your email address")]
-    public string UserName { get; set; }
+    public required string UserName { get; set; }
     
     [Required(ErrorMessage = "Please enter your password")]
     [DataType(DataType.Password)]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }

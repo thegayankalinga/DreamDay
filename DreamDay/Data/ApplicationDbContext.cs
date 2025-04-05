@@ -16,6 +16,11 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     {
         base.OnModelCreating(modelBuilder);
         
+        modelBuilder.Entity<AppUser>(entity =>
+        {
+            entity.Property(e => e.Id).HasMaxLength(450); // 450 is common for string IDs
+        });
+        
         // Checklist
         modelBuilder.Entity<Checklist>()
             .HasMany(c => c.Items)

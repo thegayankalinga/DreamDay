@@ -1,8 +1,151 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Wedding Planning Made Simple";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section text-center py-5">
+    <h1 class="display-4 mb-4">Your Perfect Day Begins Here</h1>
+    <p class="lead mb-5">Planning your dream wedding has never been easier. Let us help you create memories that last a lifetime.</p>
+    
+    @if (User.Identity is { IsAuthenticated: false })
+    {
+        <div class="d-flex justify-content-center gap-3 mb-4">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                <i class="fas fa-heart me-2"></i>Start Planning
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+            </a>
+        </div>
+    }
+    else
+    {
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg">
+            <i class="fas fa-tasks me-2"></i>Go to Dashboard
+        </a>
+    }
 </div>
+
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title h5">Plan Your Timeline</h3>
+                    <p class="card-text">Keep track of all your important dates and deadlines with our intuitive planning tools.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title h5">Manage Guest Lists</h3>
+                    <p class="card-text">Easily organize your guests, track RSVPs, and manage seating arrangements.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-dollar-sign fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title h5">Budget Tracking</h3>
+                    <p class="card-text">Stay on top of your wedding expenses with detailed budget management tools.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5 my-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2>Why Choose DreamDay?</h2>
+                <p class="lead">We understand that planning a wedding can be overwhelming. That's why we've created tools to make the process as stress-free as possible.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> All-in-one wedding planning platform</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Customizable checklists and timelines</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Connect with trusted vendors</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Mobile-friendly design</li>
+                </ul>
+                <a href="#" class="btn btn-outline-primary mt-3">Learn More</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="/images/feature_banner.jpg" alt="Wedding planning" class="img-fluid rounded shadow" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-5">What Our Couples Say</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="small mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text fst-italic">"DreamDay made our wedding planning so much easier! The tools were intuitive and helped us stay organized throughout the entire process."</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <div class="ms-3">
+                            <h5 class="mb-0">Sarah & Michael</h5>
+                            <p class="small text-muted mb-0">Married June 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="small mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text fst-italic">"The budget tracking feature alone was worth it! We saved so much time and avoided so many headaches by using DreamDay for our wedding."</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <div class="ms-3">
+                            <h5 class="mb-0">Jessica & David</h5>
+                            <p class="small text-muted mb-0">Married September 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="small mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text fst-italic">"As a wedding planner, I recommend DreamDay to all my clients. It streamlines communication and keeps everyone on the same page."</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <div class="ms-3">
+                            <h5 class="mb-0">Emma Wilson</h5>
+                            <p class="small text-muted mb-0">Professional Wedding Planner</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add any JavaScript for the homepage here
+    </script>
+}

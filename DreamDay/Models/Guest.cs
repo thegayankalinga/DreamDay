@@ -29,6 +29,7 @@ public class Guest
     public MealPreferenceTypes MealPreference { get; set; }
 
     [ForeignKey("AppUser")]
+    [MaxLength(450)]
     public required string AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
     
