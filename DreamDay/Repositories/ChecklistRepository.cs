@@ -12,6 +12,7 @@ public class ChecklistRepository(ApplicationDbContext context) : IChecklistRepos
     {
         return await context.Checklists
             .Where(user => user.AppUserId == userId)
+            .Include(item => item.Items)
             .ToListAsync();
     }
     
@@ -49,7 +50,7 @@ public class ChecklistRepository(ApplicationDbContext context) : IChecklistRepos
                 return false;
             }
         
-            context.Entry(existingChecklist).CurrentValues.SetValues(checklist);
+            existingChecklist.Title = checklist.Title;
             await context.SaveChangesAsync();
             return true;
         }

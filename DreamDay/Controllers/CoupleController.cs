@@ -122,7 +122,37 @@ namespace DreamDay.Controllers.Dashboard
         var checklist = await _checklistRepository.GetChecklistByIdAsync(id);
         return View("ChecklistDetail", checklist);
     }
-    
+
+    [HttpGet]
+    public async Task<IActionResult> EditChecklist(int id)
+    {
+        var checklist = await _checklistRepository.GetChecklistByIdAsync(id);
+        return View("EditChecklist", checklist);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditChecklist(WeddingChecklistViewModel checklistViewModel)
+    {
+        var listId = checklistViewModel.Id;
+       
+        
+        var checklist = await _checklistRepository.GetChecklistByIdAsync(listId);
+        if(checklist is null) return RedirectToAction("CheckLists", "Couple");
+        
+        checklist.Title = checklistViewModel.Title;
+        await _checklistRepository.UpdateChecklistAsync(checklist);
+        return RedirectToAction("Checklists");
+        
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteChecklist(int id)
+    {
+        var result = await _checklistRepository.DeleteChecklistAsync(id);
+        return RedirectToAction("Checklists");
+    }
     
     
     #endregion
