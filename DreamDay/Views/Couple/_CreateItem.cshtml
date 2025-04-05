@@ -1,0 +1,36 @@
+﻿@model DreamDay.ViewModels.CreateItemViewModel
+
+<form asp-action="CreateItem" method="post">
+
+    @* @Html.AntiForgeryToken() *@
+    <div class="card border-primary shadow-sm">
+        <div class="card-body">
+            <input type="hidden" asp-for="ChecklistId"/>
+
+            <div class="form-group mb-2">
+                <input asp-for="ItemName" class="form-control" placeholder="New item title"/>
+                <span asp-validation-for="ItemName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <textarea asp-for="ItemDescription" class="form-control" rows="2" placeholder="Description (optional)"></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ItemDueDate" class="form-label"></label>
+                <input asp-for="ItemDueDate" class="form-control" type="date"/>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success btn-sm me-2" title="Save">
+                    Save
+                    <i class="bi bi-check-circle"></i>
+                </button>
+                <button type="reset" class="btn btn-outline-danger btn-sm" title="Cancel">
+                    Cancel
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

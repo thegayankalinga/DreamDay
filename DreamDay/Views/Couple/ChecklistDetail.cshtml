@@ -1,4 +1,5 @@
-﻿@model Checklist
+﻿@using DreamDay.ViewModels
+@model Checklist
 
 @{
     ViewBag.Title = $"Items for {Model.Title}";
@@ -9,16 +10,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>@Model.Title - Checklist Items</h2>
         <div>
-            <a asp-action="CreateItem" asp-route-checklistId="@Model.Id" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Add New Item
-            </a>
             <a asp-action="Index" class="btn btn-outline-secondary ms-2">
                 <i class="bi bi-arrow-left"></i> Back to Checklists
             </a>
         </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
@@ -31,20 +29,20 @@
                             int completedCount = Model.Items.Count(i => i.IsCompleted);
                             int totalCount = Model.Items.Count;
                             double completionPercentage = (double)completedCount / totalCount * 100;
-                            
+
                             <span>@completedCount of @totalCount items completed (@completionPercentage.ToString("0.0")%)</span>
-                            <div class="progress mt-2">
-                                <div class="progress-bar" role="progressbar" style="width: @completionPercentage%;" 
-                                     aria-valuenow="@completionPercentage" aria-valuemin="0" aria-valuemax="100">
-                                    @completionPercentage.ToString("0.0")%
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <span>No items yet</span>
-                        }
-                    </p>
+                    <div class="progress mt-2">
+                        <div class="progress-bar" role="progressbar" style="width: @completionPercentage%;"
+                             aria-valuenow="@completionPercentage" aria-valuemin="0" aria-valuemax="100">
+                            @completionPercentage.ToString("0.0")%
+                        </div>
+                    </div>
+                    }
+                    else
+                    {
+                        <span>No items yet</span>
+                    }
+                    @* </p> *@
                 </div>
             </div>
         </div>
@@ -56,52 +54,20 @@
             This checklist doesn't have any items yet. Add your first item to get started!
         </div>
     }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 5%">Status</th>
-                        <th style="width: 25%">Title</th>
-                        <th style="width: 30%">Description</th>
-                        <th style="width: 15%">Due Date</th>
-                        <th style="width: 15%">Check-in Date</th>
-                        <th style="width: 10%">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr class="@(item.IsCompleted ? "table-success" : "")">
-                            <td>
-                                <form asp-action="ToggleCompletion" method="post">
-                                    <input type="hidden" name="itemId" value="@item.Id" />
-                                    <input type="hidden" name="checklistId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-sm @(item.IsCompleted ? "btn-success" : "btn-outline-secondary")">
-                                        <i class="bi @(item.IsCompleted ? "bi-check-circle-fill" : "bi-circle")"></i>
-                                    </button>
-                                </form>
-                            </td>
-                            <td>@item.Title</td>
-                            <td>@item.Description</td>
-                            <td>@(item.DueDate?.ToShortDateString() ?? "Not set")</td>
-                            <td>@(item.CheckInDate?.ToShortDateString() ?? "Not set")</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a asp-action="EditItem" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a asp-action="DeleteItem" asp-route-id="@item.Id" asp-route-checklistId="@Model.Id" 
-                                       class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+
+    <div class="row">
+        @if (Model.Items != null && Model.Items.Any())
+        {
+            @foreach (var item in Model.Items)
+            {
+                <div class="col-md-4 mb-3">
+                    @await Html.PartialAsync("_ViewItem", item)
+                </div>
+            }
+        }
+
+        <div class="col-md-4 mb-3">
+            @await Html.PartialAsync("_CreateItem", new CreateItemViewModel(){ ChecklistId = Model.Id })
         </div>
-    }
+    </div>
 </div>

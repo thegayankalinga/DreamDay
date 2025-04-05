@@ -1,0 +1,21 @@
+﻿@model DreamDay.Models.ChecklistItem
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Title</h5>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="card-text">@Model.Description</p>
+        }
+        @if (Model.DueDate.HasValue)
+        {
+            <p class="card-text text-muted">Due: @Model.DueDate.Value.ToShortDateString()</p>
+        }
+
+        <div class="d-flex justify-content-end">
+            <a asp-page="/Checklists/EditItem" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-pencil"></i>
+            </a>
+        </div>
+    </div>
+</div>

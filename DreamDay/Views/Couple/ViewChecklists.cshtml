@@ -31,14 +31,15 @@
                 </thead>
                 <tbody>
                     @foreach (var checklist in Model)
+                        //TODO: Fix the Edit & Delete Actions
                     {
                         <tr>
                             <td>@checklist.Title</td>
                             <td>@checklist.CreatedDate.ToShortDateString()</td>
-                            <td>@(checklist.Items != null ? checklist.Items.Count : 0)</td>
+                            <td>@(checklist.Items?.Count ?? 0)</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a asp-action="Items" asp-route-id="@checklist.Id" class="btn btn-outline-primary">
+                                    <a asp-action="ViewChecklist" asp-route-id="@checklist.Id" class="btn btn-outline-primary">
                                         <i class="bi bi-list-check"></i> View Items
                                     </a>
                                     <a asp-action="Edit" asp-route-id="@checklist.Id" class="btn btn-outline-secondary">

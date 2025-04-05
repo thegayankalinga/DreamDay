@@ -25,12 +25,12 @@ public class ItemRepository(ApplicationDbContext context): IItemRepository
         return item;
     }
 
-    public bool AddChecklistItem(ChecklistItem item)
+    public async Task<bool> AddChecklistItemAsync(ChecklistItem item)
     {
         try
         {
-            context.ChecklistItems.Add(item);
-            return context.SaveChanges() > 0;
+            await context.ChecklistItems.AddAsync(item);
+            return await context.SaveChangesAsync() > 0;
         }
         catch (Exception e)
         {

@@ -94,10 +94,7 @@ namespace DreamDay.Controllers.Dashboard
         
         return View("CreateChecklist");
     }
-
-    #endregion
-  
-
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateChecklist(WeddingChecklistViewModel checklistViewModel)
@@ -119,6 +116,65 @@ namespace DreamDay.Controllers.Dashboard
         return RedirectToAction("Index");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ViewChecklist(int id)
+    {
+        var checklist = await _checklistRepository.GetChecklistByIdAsync(id);
+        return View("ChecklistDetail", checklist);
+    }
+    
+    
+    
+    #endregion
+    
+    #region Items
+
+    [HttpPost]
+    // [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateItem(CreateItemViewModel createItemViewModel)
+    {
+        var checklist = await _checklistRepository.GetChecklistByIdAsync(createItemViewModel.ChecklistId);
+        if (checklist is null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        if (!ModelState.IsValid)
+        {
+           
+
+                checklist.Items =
+                    await _itemRepository.GetAllChecklistItemsByChecklistIdAsync(createItemViewModel.ChecklistId);
+                return View("ChecklistDetail", checklist);
+
+        }
+
+        var newItem = new ChecklistItem
+        {
+            WeddingChecklistId = createItemViewModel.ChecklistId,
+            Checklist = checklist,
+            Title = createItemViewModel.ItemName,
+            Description = createItemViewModel.ItemDescription,
+            DueDate = createItemViewModel.ItemDueDate,
+            CheckInDate = createItemViewModel.ItemCheckDate,
+            CreatedDate = DateTime.Now,
+            IsCompleted = createItemViewModel.IsChecked
+        };
+
+        bool success = await _itemRepository.AddChecklistItemAsync(newItem);
+
+        if (success)
+        {
+            ModelState.AddModelError("", "Failed to add item.");
+           
+            checklist.Items = await _itemRepository.GetAllChecklistItemsByChecklistIdAsync(checklist.Id);
+            return View("ChecklistDetail", checklist);
+        }
+        checklist.Items = await _itemRepository.GetAllChecklistItemsByChecklistIdAsync(checklist.Id);
+        return View("ChecklistDetail", checklist);
+    }
+
+    
+    #endregion
     // [HttpGet]
     // public async Task<IActionResult> AddItem()
     // {

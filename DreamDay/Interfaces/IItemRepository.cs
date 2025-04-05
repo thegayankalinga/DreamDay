@@ -6,7 +6,7 @@ public interface IItemRepository
 {
     Task<List<ChecklistItem>> GetAllChecklistItemsByChecklistIdAsync(int checklistId);
     Task<ChecklistItem?> GetChecklistItemByIdAsync(int checklistItemId);
-    bool AddChecklistItem(ChecklistItem item);
+    Task<bool> AddChecklistItemAsync(ChecklistItem item);
     Task<bool> UpdateChecklistItem(ChecklistItem item, int checklistItemId);
     Task<bool> DeleteChecklistItem(int checklistItemId);
     
