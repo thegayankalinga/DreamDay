@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DreamDay.Models;
 
@@ -10,6 +11,7 @@ public class ChecklistItem
     
     [ForeignKey("Checklist")]
     public int WeddingChecklistId { get; set; }
+    [ValidateNever]
     public required Checklist Checklist { get; set; }
     
     [MaxLength(100)]

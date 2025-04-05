@@ -1,13 +1,14 @@
 ﻿@model DreamDay.Models.ChecklistItem
 
-<form method="post" asp-page-handler="EditItem">
+<form asp-action="EditItem" asp-controller="Couple" method="post">
+    @Html.AntiForgeryToken()
     <div class="card border-warning shadow-sm">
         <div class="card-body">
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="WeddingChecklistId" />
+            <input type="hidden" asp-for="Id"/>
+            <input type="hidden" asp-for="WeddingChecklistId"/>
 
             <div class="form-group mb-2">
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" class="form-control"/>
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
@@ -17,14 +18,20 @@
 
             <div class="form-group mb-3">
                 <label asp-for="DueDate" class="form-label"></label>
-                <input asp-for="DueDate" class="form-control" type="date" />
+                <input asp-for="DueDate" class="form-control" type="date"/>
             </div>
 
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-warning btn-sm me-2" title="Update">
+                    Save
                     <i class="bi bi-save"></i>
                 </button>
-                <a asp-page="/Checklists/Details" asp-route-id="@Model.WeddingChecklistId" class="btn btn-outline-secondary btn-sm" title="Cancel">
+                <a asp-controller="Couple"
+                   asp-action="ViewChecklist"
+                   asp-route-id="@Model.WeddingChecklistId"
+                   class="btn btn-outline-secondary btn-sm"
+                   title="Cancel">
+                    Cancel
                     <i class="bi bi-x-circle"></i>
                 </a>
             </div>

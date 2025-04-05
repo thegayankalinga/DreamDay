@@ -174,6 +174,57 @@ namespace DreamDay.Controllers.Dashboard
     }
 
     
+    [HttpGet]
+    public async Task<IActionResult> EditItem(int id)
+    {
+        var item = await _itemRepository.GetChecklistItemByIdAsync(id);
+        return View("_EditItem", item);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditItem(ChecklistItem item)
+    {
+        var checklist = await _checklistRepository.GetChecklistByIdAsync(item.WeddingChecklistId); 
+        if (checklist is null) return RedirectToAction("Index", "Home");
+        
+       
+        
+        if (!ModelState.IsValid)
+        {
+            checklist.Items = await _itemRepository.GetAllChecklistItemsByChecklistIdAsync(checklist.Id);
+            return View("ChecklistDetail", checklist);
+        }
+        
+        var itemToUpdate = new ChecklistItem
+        {
+            WeddingChecklistId = item.WeddingChecklistId,
+            Checklist = checklist,
+            Title = item.Title,
+            Description = item.Description,
+            DueDate = item.DueDate,
+            IsCompleted = item.IsCompleted
+   
+        };
+        
+        if (item.IsCompleted)
+        {
+         itemToUpdate.CheckInDate = DateTime.Now; 
+        }
+        
+        var result = await _itemRepository.UpdateChecklistItem(itemToUpdate, item.Id);
+        checklist.Items = await _itemRepository.GetAllChecklistItemsByChecklistIdAsync(checklist.Id);
+        if (!result)
+        {
+            ModelState.AddModelError("", "Failed to update item.");
+            
+            return View("ChecklistDetail", checklist);
+        }
+        
+        return View("ChecklistDetail", checklist);
+    }
+
+    
     #endregion
     // [HttpGet]
     // public async Task<IActionResult> AddItem()

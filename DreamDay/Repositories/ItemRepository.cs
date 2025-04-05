@@ -48,8 +48,14 @@ public class ItemRepository(ApplicationDbContext context): IItemRepository
             {
                 return false;
             }
-
-            context.Entry(existingItem).CurrentValues.SetValues(item);
+            
+            existingItem.Title = item.Title;
+            existingItem.Description = item.Description;
+            existingItem.DueDate = item.DueDate;
+            existingItem.IsCompleted = item.IsCompleted;
+            existingItem.CheckInDate = item.CheckInDate;
+            existingItem.WeddingChecklistId = item.WeddingChecklistId;
+            
             await context.SaveChangesAsync();
             return true;
         }
