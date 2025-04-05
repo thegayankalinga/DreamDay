@@ -267,6 +267,15 @@ namespace DreamDay.Controllers.Dashboard
         return RedirectToAction("ViewChecklist", new { id = item.WeddingChecklistId });
     }
 
+
+    [HttpPost, ActionName("DeleteItem")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteItem(int id)
+    {
+        var result = await _itemRepository.DeleteChecklistItem(id);
+        return RedirectToAction("Checklists");
+    }
+
     
     #endregion
     // [HttpGet]
