@@ -223,6 +223,19 @@ namespace DreamDay.Controllers.Dashboard
         
         return View("ChecklistDetail", checklist);
     }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmItem(int id)
+    {
+        var item = await _itemRepository.GetChecklistItemByIdAsync(id);
+        if (item == null) return NotFound();
+
+        item.IsCompleted = !item.IsCompleted;
+        await _itemRepository.UpdateConfirmStatus(item, id);
+
+        return RedirectToAction("ViewChecklist", new { id = item.WeddingChecklistId });
+    }
 
     
     #endregion

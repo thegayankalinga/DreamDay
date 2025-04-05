@@ -66,7 +66,7 @@ public class ItemRepository(ApplicationDbContext context): IItemRepository
         }
     }
 
-    public async Task<bool> UpdateDueDate(DateTime dueDate, int checklistItemId)
+    public async Task<bool> UpdateConfirmStatus(ChecklistItem item, int checklistItemId)
     {
         try
         {
@@ -76,7 +76,7 @@ public class ItemRepository(ApplicationDbContext context): IItemRepository
                 return false;
             }
 
-            context.Entry(existingItem).CurrentValues.SetValues(dueDate);
+            existingItem.IsCompleted = item.IsCompleted;
             await context.SaveChangesAsync();
             return true;
         }

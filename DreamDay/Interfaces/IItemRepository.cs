@@ -10,6 +10,6 @@ public interface IItemRepository
     Task<bool> UpdateChecklistItem(ChecklistItem item, int checklistItemId);
     Task<bool> DeleteChecklistItem(int checklistItemId);
     
-    Task<bool> UpdateDueDate(DateTime dueDate, int checklistItemId);
+    Task<bool> UpdateConfirmStatus(ChecklistItem item, int checklistItemId);
 
 }

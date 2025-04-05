@@ -12,14 +12,28 @@
             <p class="card-text text-muted">Due: @Model.DueDate.Value.ToShortDateString()</p>
         }
 
-        <div class="d-flex justify-content-end">
-            <a asp-controller="Couple"
-               asp-action="EditItem"
-               asp-route-id="@Model.Id"
-               class="btn btn-sm btn-outline-secondary">
-                Edit
-                <i class="bi bi-pencil"></i>
-            </a>
+        <div class="d-flex justify-content-end gap-2">
+            <form asp-controller="Couple"
+                  asp-action="ConfirmItem"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm @(Model.IsCompleted ? "btn-success" : "btn-outline-success")" title="Mark as Completed">
+                    @(Model.IsCompleted ? "Completed" : "Mark Complete")
+                    <i class="bi bi-check-circle"></i>
+                </button>
+            </form>
+
+            <div class="d-flex justify-content-end">
+                <a asp-controller="Couple"
+                   asp-action="EditItem"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-sm btn-outline-secondary">
+                    Edit
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </div>
         </div>
-    </div>
+        </div>
 </div>
