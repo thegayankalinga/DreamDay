@@ -1,0 +1,51 @@
+﻿@using DreamDay.Data.Enums
+@model DreamDay.Models.Guest
+
+@{
+    ViewData["Title"] = "Edit Guest";
+}
+
+<h2>Edit Guest</h2>
+
+<form asp-action="EditGuest" asp-controller="Guest" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="GuestName" class="control-label"></label>
+        <input asp-for="GuestName" class="form-control" />
+        <span asp-validation-for="GuestName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone" class="control-label"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RsvpStatus" class="control-label"></label>
+        <select asp-for="RsvpStatus" class="form-control" asp-items="Html.GetEnumSelectList<RsvpStatusTypes>()"></select>
+        <span asp-validation-for="RsvpStatus" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MealPreference" class="control-label"></label>
+        <select asp-for="MealPreference" class="form-control" asp-items="Html.GetEnumSelectList<MealPreferenceTypes>()"></select>
+        <span asp-validation-for="MealPreference" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-success">Update Guest</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

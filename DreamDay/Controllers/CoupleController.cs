@@ -1,13 +1,10 @@
-﻿using DreamDay.Data;
-using DreamDay.Interfaces;
+﻿using DreamDay.Interfaces;
 using DreamDay.Models;
 using DreamDay.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace DreamDay.Controllers.Dashboard
+namespace DreamDay.Controllers
 {
     [Authorize(Policy = "RequireCoupleRole")]
     public class CoupleController : Controller
@@ -16,15 +13,18 @@ namespace DreamDay.Controllers.Dashboard
         private readonly IUserProfileRepository _userProfileRepository;
         private readonly IChecklistRepository _checklistRepository;
         private readonly IItemRepository _itemRepository;
+        private readonly IGuestRepository _guestRepository;
 
     public CoupleController(
         IUserProfileRepository userProfileRepository, 
         IChecklistRepository checklistRepository, 
-        IItemRepository itemRepository)
+        IItemRepository itemRepository,
+        IGuestRepository guestRepository)
     {
         _userProfileRepository = userProfileRepository;
         _checklistRepository = checklistRepository;
         _itemRepository = itemRepository;
+        _guestRepository = guestRepository;
     }
     
     [Authorize(Policy = "RequireCoupleRole")]
@@ -48,7 +48,8 @@ namespace DreamDay.Controllers.Dashboard
         {
             FullCoupleName = $"{currentUser.FirstName} & {coupleProfile.PartnerName}",
             WeddingDate = coupleProfile.WeddingDate,
-            Checklists = await _checklistRepository.GetAllChecklistsByUserAsync(currentUser.Id)
+            Checklists = await _checklistRepository.GetAllChecklistsByUserAsync(currentUser.Id),
+            Guests = await _guestRepository.GetAllGuestUsingAppUserIdAsync(currentUser.Id)
         };
         
         return View(coupleDashboardViewModel);

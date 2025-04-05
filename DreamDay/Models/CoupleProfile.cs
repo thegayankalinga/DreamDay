@@ -18,4 +18,5 @@ public class CoupleProfile
     public string PartnerName { get; set; }
     
     public ICollection<Checklist>? WeddingChecklists { get; set; }
+    public List<Guest>? Guests { get; set; }
 }

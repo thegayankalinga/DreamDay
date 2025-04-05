@@ -10,6 +10,7 @@ public class CoupleDashboardViewModel
 
     // Future features placeholders
     public bool IsGuestListReady => false;
+    public List<Guest> Guests { get; set; } = new List<Guest>();
     public bool IsBudgetTrackerReady => false;
     public bool IsTimelineReady => false;
 }

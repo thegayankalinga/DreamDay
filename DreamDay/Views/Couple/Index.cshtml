@@ -1,4 +1,5 @@
 ﻿@model DreamDay.ViewModels.CoupleDashboardViewModel
+@* @model Guest *@
 
 @{
     Layout = "_Dashboard";
@@ -47,7 +48,28 @@
                 <div class="card-body">
                     <h4 class="card-title">👥 Guest List Management</h4>
                     <p class="card-text">Create and track RSVPs, meal preferences, and seating arrangements.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                    <a asp-controller="Guest" asp-action="Create" class="btn btn-outline-primary me-3">Add +</a>
+
+                    <a asp-controller="Guest" asp-action="Index" class="btn btn-primary">Manage Guest</a>
+                    <hr/>
+                    @if (Model.Guests.Any())
+                    {
+                        <h6>Guests : @Model.Guests.Count</h6>  
+                        <ul class="list-group">
+                            @foreach (var guest in Model.Guests.Take(3))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @guest.GuestName
+                                    <a asp-controller="Guest" asp-action="EditGuest" asp-route-id="@guest.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                </li>
+                            }
+                        </ul>
+                    }else
+                    {
+                        <p class="text-muted">No Guests added yet.</p>
+                        @* <a asp-controller="Couple" asp-action="Create" class="btn btn-outline-primary me-3">Add +</a> *@
+                    }
+                    @* <button class="btn btn-outline-secondary" disabled>Coming Soon</button> *@
                 </div>
             </div>
         </div>

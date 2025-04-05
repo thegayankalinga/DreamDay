@@ -59,5 +59,7 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     
     public DbSet<Checklist> Checklists { get; set; }
     public DbSet<ChecklistItem> ChecklistItems { get; set; }
+    
+    public DbSet<Guest> Guests { get; set; }
 
 }
