@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using DreamDay.Data
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,6 +12,7 @@
     <title>@ViewData["Title"] - DreamDay</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
@@ -38,70 +42,206 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <div class="sb-sidenav-menu-heading">Common</div>
                         <a class="nav-link" asp-controller="Home" asp-action="Index">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
-                        <div class="sb-sidenav-menu-heading">Interface</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                            Layouts
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        @* <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion"> *@
-                        @*     <nav class="sb-sidenav-menu-nested nav"> *@
-                        @*         <a class="nav-link" href="layout-static.html">Static Navigation</a> *@
-                        @*         <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a> *@
-                        @*     </nav> *@
-                        @* </div> *@
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                            Pages
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                    Authentication
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                                        <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-                                        @* <a class="nav-link" href="password.html">Forgot Password</a> *@
-                                    </nav>
-                                </div>
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                    Error
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        @* <a class="nav-link" href="401.html">401 Page</a> *@
-                                        @* <a class="nav-link" href="404.html">404 Page</a> *@
-                                        @* <a class="nav-link" href="500.html">500 Page</a> *@
-                                    </nav>
-                                </div>
-                            </nav>
-                        </div>
-                    @*     <div class="sb-sidenav-menu-heading">Addons</div> *@
-                    @*     <a class="nav-link" href="charts.html"> *@
-                    @*         <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div> *@
-                    @*         Charts *@
-                    @*     </a> *@
-                    @*     <a class="nav-link" href="tables.html"> *@
-                    @*         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div> *@
-                    @*         Tables *@
-                    @*     </a> *@
+                       
+                        @if (User.IsInRole(UserRoles.Couple))
+                        {
+                            <div class="sb-sidenav-menu-heading">Couple</div> 
+                            <!-- Checklists -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseChecklists" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Checklists
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseChecklists" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        View Lists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+
+                            <!-- Guests -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Guests
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseGuests" aria-labelledby="headingGuests" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionGuests">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseGuest" aria-expanded="false" aria-controls="pagesCollapseGuest">
+                                        One
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Budget -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseBudget" aria-expanded="false" aria-controls="collapseGuests">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Budget
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseBudget" aria-labelledby="headingGuests" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionGuests">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseGuest" aria-expanded="false" aria-controls="pagesCollapseGuest">
+                                        One
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Budget -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseTimeline" aria-expanded="false" aria-controls="collapseGuests">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Timeline
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseTimeline" aria-labelledby="headingGuests" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionGuests">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseGuest" aria-expanded="false" aria-controls="pagesCollapseGuest">
+                                        One
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            
+                        }else if (User.IsInRole(UserRoles.Planner))
+                        {
+                            <div class="sb-sidenav-menu-heading">Planner</div> 
+                            <!-- Weddings -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWeddings" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Weddings
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseWeddings" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Couples
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="collapseWeddings" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Weddings
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="collapseWeddings" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Checklists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Venue -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVenue" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Venue
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseVenue" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        View Lists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Planner Reports -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePlannerReport" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Reports
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePlannerReport" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Popular Venue
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="collapsePlannerReport" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Average Budget
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                        }else if (User.IsInRole(UserRoles.Admin))
+                        {
+                            <div class="sb-sidenav-menu-heading">Admin</div> 
+                            
+                            <!-- Users -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-tarUsers aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Users
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseUsers" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        View Lists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Vendors -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdminVendor" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Vendors
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAdminVendor" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        View Lists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                            
+                            <!-- Reports -->
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdminReport" aria-expanded="false" aria-controls="collapseChecklists">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Reports
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseAdminReport" aria-labelledby="headingChecklists" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionChecklists">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        View Lists
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                </nav>
+                            </div>
+                        }
+                        
                     </div> 
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as:</div>
                     @if (User.Identity is { IsAuthenticated: true })
                     {
-                        <p>@User.Identity.Name - @string.Join(", ", User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))</p>
+                        <p>@User.Identity.Name</p>
+                        <p>@string.Join(", ", User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))</p>
                     }
                     else
                     {

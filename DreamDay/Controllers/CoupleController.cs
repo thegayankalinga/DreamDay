@@ -35,7 +35,7 @@ namespace DreamDay.Controllers
         var currentUser = _userProfileRepository.CurrentUser;
         if (coupleProfile == null)
         {
-            Console.WriteLine("Couple profile not found", coupleProfile);
+            //Console.WriteLine("Couple profile not found", coupleProfile);
             return RedirectToAction("Index", "Home");
         }
 
