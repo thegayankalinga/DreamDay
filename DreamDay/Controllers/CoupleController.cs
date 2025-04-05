@@ -98,31 +98,26 @@ namespace DreamDay.Controllers.Dashboard
     #endregion
   
 
-    // [HttpPost]
-    // public async Task<IActionResult> CreateChecklist(WeddingChecklistViewModel checklistViewModel)
-    // {
-    //     var user = await _userManager.Users
-    //         .Include(u => u.CoupleProfile)
-    //         .FirstOrDefaultAsync(u => u.Id == _userManager.GetUserId(User));
-    //
-    //     if (user?.CoupleProfile == null)
-    //     {
-    //         Console.WriteLine("Couple profile not found");
-    //         return BadRequest("Couple profile not found.");
-    //     }
-    //
-    //     Checklist checklist = new Checklist()
-    //     {
-    //         AppUserId = user.Id,
-    //         Title = checklistViewModel.Title,
-    //         CreatedDate = checklistViewModel.CreatedAt,
-    //         
-    //
-    //     };
-    //
-    //     await _repository.CreateChecklistAsync(checklist); // <- your repository method
-    //     return RedirectToAction("Index");
-    // }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateChecklist(WeddingChecklistViewModel checklistViewModel)
+    {
+        var currentUser = _userProfileRepository.CurrentUser;
+        if (currentUser is null) return RedirectToAction("Index", "Home");
+        
+        Checklist checklist = new Checklist()
+        {
+
+            AppUserId = currentUser.Id,
+            AppUser = currentUser,
+            Title = checklistViewModel.Title,
+            CreatedDate = DateTime.Now,
+
+        };
+    
+        await _checklistRepository.CreateChecklistAsync(checklist); // <- your repository method
+        return RedirectToAction("Index");
+    }
 
     // [HttpGet]
     // public async Task<IActionResult> AddItem()

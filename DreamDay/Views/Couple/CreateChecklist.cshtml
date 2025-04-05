@@ -7,15 +7,16 @@
 
 <h2>Create a New Wedding Checklist</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="CreateChecklist" method="post">
+    @Html.AntiForgeryToken()
     <div class="form-group">
         <label asp-for="Title">Checklist Title</label>
-        <input asp-for="Title" class="form-control" placeholder="e.g., Main Wedding Tasks" required maxlength="100" />
+        <input asp-for="Title" class="form-control" placeholder="e.g., Main Wedding Tasks" required maxlength="100"/>
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
-    
+
     <div class="mt-3">
         <button type="submit" class="btn btn-primary">Create Checklist</button>
-        <a asp-controller="Dashboard" asp-action="Index" class="btn-link">Cancel</a>
+        <a asp-controller="Couple" asp-action="Index" class="btn-link">Cancel</a>
     </div>
 </form>
