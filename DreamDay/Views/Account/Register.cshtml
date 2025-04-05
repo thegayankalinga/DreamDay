@@ -1,109 +1,251 @@
- @model DreamDay.ViewModels.RegisterViewModel
+@model DreamDay.ViewModels.RegisterViewModel
 
- @{
-     ViewData["Title"] = "Register";
- }
- @{
-     Layout = "_Layout";
- }
+@{
+    ViewData["Title"] = "Register";
+}
+@{
+    Layout = "_Layout";
+}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Register</title>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
     
-</head>
-<body>
-<div>
-    <h2>Register</h2>
+    .main-content {
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .register-container {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .site-footer {
+        flex-shrink: 0;
+        padding: 1rem 0;
+        background-color: #f8f9fa;
+        margin-top: auto;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card-footer {
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+    
+    .form-control {
+        padding: 0.75rem 1rem;
+        height: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .btn-register {
+        background-color: var(--primary-color, #d48a9d);
+        border-color: var(--primary-color, #d48a9d);
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        width: 100%;
+    }
+    
+    .btn-register:hover {
+        background-color: var(--primary-dark, #b57080);
+        border-color: var(--primary-dark, #b57080);
+    }
+    
+    .login-link {
+        color: var(--primary-color, #d48a9d);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .login-link:hover {
+        color: var(--primary-dark, #b57080);
+    }
+    
+    /* Two column grid for form inputs */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+    
+    .form-col {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 10px;
+    }
+    
+    /* Mobile responsive */
+    @@media (max-width: 768px) {
+        .form-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+    
+    /* Custom styling for the role fields section */
+    #coupleFields {
+        background-color: #f9f9f9;
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        border-left: 4px solid var(--primary-color, #d48a9d);
+    }
+</style>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-            <a href="@Url.Action("Login", "Account")" class="btn btn-primary mt-2">Go to Login</a>
+<div class="main-content">
+    <div class="register-container">
+        <div class="card rounded-lg">
+            <div class="card-header">
+                <h3 class="text-center">Create an Account</h3>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">Success!</h4>
+                        <p>@TempData["SuccessMessage"]</p>
+                        <hr>
+                        <div class="d-grid">
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-primary">Go to Login</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label asp-for="FirstName">First Name</label>
+                                    <input asp-for="FirstName" class="form-control form-control-lg" placeholder="Enter your first name" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label asp-for="LastName">Last Name</label>
+                                    <input asp-for="LastName" class="form-control form-control-lg" placeholder="Enter your last name" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="EmailAddress">Email Address</label>
+                            <input asp-for="EmailAddress" class="form-control form-control-lg" placeholder="Enter your email address" />
+                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label asp-for="Password">Password</label>
+                                    <input asp-for="Password" class="form-control form-control-lg" placeholder="Create a password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                                    <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Confirm your password" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Role">I am registering as</label>
+                            <select asp-for="Role" class="form-control form-control-lg" onchange="toggleRoleFields(this.value)">
+                                <option value="">-- Select Role --</option>
+                                <option value="couple">Couple</option>
+                                <option value="planner">Planner</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
+                        <!-- Couple Only Fields -->
+                        <div id="coupleFields" style="display:none;">
+                            <h5 class="mb-3">Wedding Details</h5>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label asp-for="WeddingDate">Wedding Date</label>
+                                        <input asp-for="WeddingDate" type="date" class="form-control form-control-lg" />
+                                        <span asp-validation-for="WeddingDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label asp-for="PartnerName">Partner's Name</label>
+                                        <input asp-for="PartnerName" class="form-control form-control-lg" placeholder="Enter your partner's name" />
+                                        <span asp-validation-for="PartnerName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-register btn-lg">Create Account</button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a href="@Url.Action("Login", "Account")" class="login-link">Login here</a></p>
+            </div>
         </div>
-    }
-    else
-    {
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="EmailAddress"></label>
-                <input asp-for="EmailAddress" class="form-control" />
-                <span asp-validation-for="EmailAddress" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="FirstName"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="LastName"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Role"></label>
-                <select asp-for="Role" class="form-control" onchange="toggleRoleFields(this.value)">
-                    <option value="">-- Select Role --</option>
-                    <option value="couple">Couple</option>
-                    <option value="planner">Planner</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-
-            <!-- Couple Only Fields -->
-            <div id="coupleFields" style="display:none;">
-                <div class="form-group">
-                    <label asp-for="WeddingDate"></label>
-                    <input asp-for="WeddingDate" type="date" class="form-control" />
-                    <span asp-validation-for="WeddingDate" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="PartnerName"></label>
-                    <input asp-for="PartnerName" class="form-control" />
-                    <span asp-validation-for="PartnerName" class="text-danger"></span>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-    }
-
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-        <script>
-            function toggleRoleFields(role) {
-                const coupleFields = document.getElementById("coupleFields");
-                coupleFields.style.display = (role === "couple") ? "block" : "none";
-            }
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const selectedRole = document.querySelector("[name='Role']").value;
-                toggleRoleFields(selectedRole);
-            });
-        </script>
-    }
-
+    </div>
 </div>
 
-</body>
-</html>
+<footer class="site-footer">
+    <div class="container">
+        <div class="text-center">
+            @* <span>&copy; 2025 - DreamDay - <a href="../Views/Shared/pr">Privacy</a></span> *@
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleRoleFields(role) {
+        const coupleFields = document.getElementById("coupleFields");
+        coupleFields.style.display = (role === "couple") ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectedRole = document.querySelector("[name='Role']").value;
+        toggleRoleFields(selectedRole);
+    });
+</script>

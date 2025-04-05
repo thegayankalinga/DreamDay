@@ -41,7 +41,8 @@ public class UserProfileRepository: IUserProfileRepository
             {
                 UserType = UserRoles.Couple;
                 CoupleProfile = await _context.CoupleProfiles
-                    .FirstOrDefaultAsync(c => c.AppUserId == CurrentUser.Id);
+                    .Where(c => c.AppUserId == CurrentUser.Id)
+                    .FirstOrDefaultAsync();
             }
             else if (_httpContextAccessor.HttpContext.User.IsInRole(UserRoles.Planner))
             {

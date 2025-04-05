@@ -130,9 +130,11 @@ public class AccountController : Controller
 
         };
         var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
+       
         if (newUserResponse.Succeeded)
         {
             await _userManager.AddToRoleAsync(newUser, UserRoles.Couple);
+            Console.WriteLine(newUser.Id);
             switch (registerViewModel.Role)
             {
                 case UserRoles.Couple:
@@ -160,6 +162,7 @@ public class AccountController : Controller
                     break;
             }
         }
+        await _context.SaveChangesAsync();
         return RedirectToAction("Login", "Account");
 
     }

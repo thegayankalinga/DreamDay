@@ -13,7 +13,8 @@ public class CoupleProfile
     public AppUser? AppUser { get; set; }
 
     [ForeignKey("Planner")]
-    public int? PlannerId { get; set; }     // Points to the assigned planner
+    [MaxLength(450)]
+    public string? PlannerId { get; set; }     // Points to the assigned planner
     public AppUser? Planner { get; set; }      // Also an AppUser, with Planner role
 
     public DateOnly WeddingDate { get; set; }

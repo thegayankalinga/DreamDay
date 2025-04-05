@@ -1,4 +1,3 @@
-
 @model DreamDay.ViewModels.LoginViewModel
 
 @{
@@ -9,56 +8,133 @@
     ViewData["Title"] = "Login";
 }
 
-<!DOCTYPE html>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
 
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body class="bg-primary">   
-    <div id="layoutAuthentication">
-        <div id="layoutAuthentication_content">
-            <main>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
-                                <div class="card-body">
-                                    <form asp-action="Login" method="post">
-                                        @if (TempData["Error"] != null)
-                                        {
-                                            <div class="alert alert-danger" role="alert">
-                                                @TempData["Error"]
-                                            </div>
-                                        }
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="UserName" class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                            <label for="inputEmail">Email address</label>
-                                            <span asp-validation-for="UserName" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="Password" class="form-control" id="inputPassword" type="password" placeholder="Password" />
-                                            <label for="inputPassword">Password</label>
-                                            <span asp-validation-for="Password" class="text-danger"></span>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="small" href="#">Forgot Password?</a>
-                                            <button type="submit" class="btn btn-primary">Login</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center py-3">
-                                    <div class="small"><a href="https://localhost:7186/Account/Register">Need an account? Sign up!</a></div>
-                                </div>
-                            </div>
+    .main-content {
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 450px;
+        margin: 2rem auto;
+    }
+
+    .site-footer {
+        flex-shrink: 0;
+        padding: 1rem 0;
+        background-color: #f8f9fa;
+        margin-top: auto;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-footer {
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        height: auto;
+    }
+
+    .btn-login {
+        background-color: var(--primary-color, #d48a9d);
+        border-color: var(--primary-color, #d48a9d);
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+    }
+
+    .btn-login:hover {
+        background-color: var(--primary-dark, #b57080);
+        border-color: var(--primary-dark, #b57080);
+    }
+
+    .forgot-password {
+        color: var(--accent-color, #6a82fb);
+        text-decoration: none;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .signup-link {
+        color: var(--primary-color, #d48a9d);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .signup-link:hover {
+        color: var(--primary-dark, #b57080);
+    }
+</style>
+
+<div class="main-content">
+    <div class="login-container">
+        <div class="card rounded-lg">
+            <div class="card-header">
+                <h3 class="text-center">Login</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Login" method="post">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["Error"]
                         </div>
+                    }
+                    <div class="mb-4">
+                        <input asp-for="UserName" class="form-control form-control-lg" id="inputEmail" type="email" placeholder="Email address" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
-                </div>
-            </main>
+                    <div class="mb-4">
+                        <input asp-for="Password" class="form-control form-control-lg" id="inputPassword" type="password" placeholder="Password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-login btn-lg">Login</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Need an account? <a asp-action="Register" asp-controller="Account">Sign up!</a></p>
+            </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="/js/scripts.js"></script>
-</body>
-</html>
+</div>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="text-center">
+            <span>&copy; 2025 - DreamDay - <a href="/Privacy">Privacy</a></span>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="/js/scripts.js"></script>
