@@ -295,6 +295,25 @@ namespace DreamDay.Controllers
 
     
     #endregion
+    
+    
+    [HttpPost]
+    public async Task<IActionResult> AddExpenseFromCouple(int categoryId, string description, decimal amount, DateTime date)
+    {
+        var expense = new Expense
+        {
+            BudgetCategoryId = categoryId,
+            Description = description,
+            Amount = amount,
+            ExpenseDate = date
+        };
+
+        await _budgetRepository.AddExpenseAsync(expense, categoryId);
+
+        TempData["Success"] = "Expense added successfully!";
+        return RedirectToAction("Index"); // or "Dashboard" if you're redirecting there
+    }
+   
     // [HttpGet]
     // public async Task<IActionResult> AddItem()
     // {

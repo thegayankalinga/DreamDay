@@ -175,14 +175,15 @@
         <!-- Modal -->
         <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form asp-page-handler="AddExpense" method="post" class="modal-content">
+                <form asp-action="AddExpenseFromCouple" asp-controller="Couple" method="post" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addExpenseModalLabel">Add New Expense</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+
                         <div class="mb-3">
-                            <label asp-for="NewExpense.BudgetCategoryId" class="form-label">Category</label>
+                            <label htmlFor="categoryId" class="form-label">Category</label>
 
                             @if (Model.BudgetCategories == null || !Model.BudgetCategories.Any())
                             {
@@ -198,26 +199,31 @@
                             }
                             else
                             {
-                                <select asp-for="NewExpense.BudgetCategoryId" class="form-select" asp-items="Model.BudgetCategories"></select>
+                                <select name="categoryId" class="form-select" asp-items="Model.BudgetCategories"></select>
                             }
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="NewExpense.Description" class="form-label">Description</label>
-                            <input asp-for="NewExpense.Description" class="form-control" />
+                            <label htmlFor="description" class="form-label">Description</label>
+                            <input name="description" class="form-control" />
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="NewExpense.Amount" class="form-label">Amount</label>
-                            <input asp-for="NewExpense.Amount" class="form-control" />
+                            <label htmlFor="amount" class="form-label">Amount</label>
+                            <input name="amount" type="number" step="0.01" class="form-control" />
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="NewExpense.Date" class="form-label">Date</label>
-                            <input asp-for="NewExpense.Date" type="date" class="form-control" />
+                            <label htmlFor="date" class="form-label">Date</label>
+                            <input name="date" type="date" class="form-control" />
                         </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Save Expense</button>
                     </div>
                 </form>
+
             </div>
         </div>
         
