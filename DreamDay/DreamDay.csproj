@@ -17,9 +17,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Views\Admin\" />
       <Folder Include="Views\Checklist\" />
-      <Folder Include="Views\Planner\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Admin\Users\Index.cshtml" />
     </ItemGroup>
 
 </Project>

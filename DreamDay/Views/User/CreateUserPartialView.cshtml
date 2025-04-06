@@ -1,0 +1,178 @@
+﻿@model DreamDay.ViewModels.RegisterViewModel
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-person-plus-fill me-2"></i>Add New User</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form asp-controller="Account" asp-action="Register" method="post" id="createUserForm">
+                    <div class="mb-4">
+                        <div class="nav nav-pills nav-justified" id="createRoleTabs" role="tablist">
+                            <button class="nav-link active" id="create-couple-tab" data-bs-toggle="pill" data-role="Couple" 
+                                   data-bs-target="#create-couple-content" type="button" role="tab" aria-selected="true"
+                                   onclick="setUserRole('create', 'Couple')">
+                                <i class="bi bi-people-fill me-2"></i>Couple
+                            </button>
+                            <button class="nav-link" id="create-planner-tab" data-bs-toggle="pill" data-role="Planner"
+                                   data-bs-target="#create-planner-content" type="button" role="tab" aria-selected="false"
+                                   onclick="setUserRole('create', 'Planner')">
+                                <i class="bi bi-briefcase-fill me-2"></i>Planner
+                            </button>
+                            <button class="nav-link" id="create-admin-tab" data-bs-toggle="pill" data-role="Admin"
+                                   data-bs-target="#create-admin-content" type="button" role="tab" aria-selected="false"
+                                   onclick="setUserRole('create', 'Admin')">
+                                <i class="bi bi-shield-fill-check me-2"></i>Admin
+                            </button>
+                        </div>
+                        <input type="hidden" id="createUserRole" name="Role" value="Couple" />
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="EmailAddress" class="form-label">Email <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" id="EmailAddress" name="EmailAddress" required>
+                            </div>
+                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                <input type="password" class="form-control" id="Password" name="Password" required>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="Password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="FirstName" name="FirstName" required>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="LastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="LastName" name="LastName">
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <!-- Couple specific fields -->
+                        <div class="tab-pane fade show active" id="create-couple-content" role="tabpanel">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                Creating a user with the Couple role will allow them to plan their wedding
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="PartnerName" class="form-label">Partner Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="PartnerName" name="PartnerName">
+                                    <span asp-validation-for="PartnerName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="WeddingDate" class="form-label">Wedding Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="WeddingDate" name="WeddingDate">
+                                    <span asp-validation-for="WeddingDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="PlannerId" class="form-label">Assign Planner (Optional)</label>
+                                <select class="form-select" id="PlannerId" name="PlannerId">
+                                    <option value="">-- Select Planner --</option>
+                                    @if (ViewBag.Planners != null)
+                                    {
+                                        @foreach (var planner in ViewBag.Planners)
+                                        {
+                                            <option value="@planner.Id">@planner.FirstName @planner.LastName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Planner specific fields -->
+                        <div class="tab-pane fade" id="create-planner-content" role="tabpanel">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                Creating a user with the Planner role will allow them to manage multiple couples
+                            </div>
+                            
+                            <div class="form-check form-switch mb-4">
+                                <input class="form-check-input" type="checkbox" id="IsApproved" name="IsApproved">
+                                <label class="form-check-label" for="IsApproved">
+                                    Approve planner immediately (otherwise will require admin approval)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Admin specific fields -->
+                        <div class="tab-pane fade" id="create-admin-content" role="tabpanel">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Creating a user with Admin role will grant them full access to all system features
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-person-plus-fill me-2"></i>Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set the user role when switching tabs
+    function setUserRole(prefix, role) {
+        document.getElementById(prefix + 'UserRole').value = role;
+        
+        // Enable/disable required fields based on role
+        if (role === 'Couple') {
+            document.getElementById('PartnerName').setAttribute('required', '');
+            document.getElementById('WeddingDate').setAttribute('required', '');
+        } else {
+            document.getElementById('PartnerName').removeAttribute('required');
+            document.getElementById('WeddingDate').removeAttribute('required');
+        }
+    }
+    
+    // Handle form submission validation
+    document.getElementById('createUserForm')?.addEventListener('submit', function(event) {
+        const role = document.getElementById('createUserRole').value;
+        
+        if (role === 'Couple') {
+            const partnerName = document.getElementById('PartnerName').value;
+            const weddingDate = document.getElementById('WeddingDate').value;
+            
+            if (!partnerName || !weddingDate) {
+                event.preventDefault();
+                alert('Please fill in all required fields for the Couple profile.');
+            }
+        }
+    });
+</script>

@@ -14,6 +14,11 @@ public class WeddingEventRepository : IWeddingEventRepository
         _context = context;
     }
 
+    public async Task<List<WeddingEvent>> GetAllAsync()
+    {
+        return await _context.WeddingEvents.ToListAsync();
+    }
+
     public async Task<List<WeddingEvent>> GetAllByUserIdAsync(string userId)
     {
         return await _context.WeddingEvents

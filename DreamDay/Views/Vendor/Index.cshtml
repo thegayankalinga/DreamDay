@@ -1,18 +1,87 @@
-﻿@* @model TModel *@
+﻿@model IEnumerable<DreamDay.Models.Vendor>
+@using DreamDay.Data.Enums
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Vendor Management";
+    Layout = "_Dashboard";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Vendor Management</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vendors</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-table me-1"></i>
+                    Vendor List
+                </div>
+                <div>
+                    <a asp-action="Create" class="btn btn-primary">Add New Vendor</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter by Service Type
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <li><a class="dropdown-item" asp-action="Index">All Vendors</a></li>
+                        @foreach (var type in Enum.GetValues(typeof(VendorServiceTypes)))
+                        {
+                            <li><a class="dropdown-item" asp-action="FilterByType" asp-route-serviceType="@type">@type</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <table id="vendorsTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Service Type</th>
+                        <th>Contact Info</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vendor in Model)
+                    {
+                        <tr>
+                            <td>@vendor.Id</td>
+                            <td>@vendor.Name</td>
+                            <td>@vendor.ServiceType</td>
+                            <td>@vendor.ContactInfo</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Details" asp-route-id="@vendor.Id" class="btn btn-info">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@vendor.Id" class="btn btn-warning">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@vendor.Id" class="btn btn-danger">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#vendorsTable').DataTable();
+        });
+    </script>
+}

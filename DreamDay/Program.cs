@@ -21,6 +21,7 @@ builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<IWeddingEventRepository, WeddingEventRepository>();
 builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<IVenueRepository, VenueRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 

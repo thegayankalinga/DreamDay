@@ -12,4 +12,6 @@ public interface IWeddingEventRepository
     
     Task<List<Vendor>> GetVendorsByEventIdAsync(int eventId);
     Task<bool> AssignVendorsToEventAsync(int eventId, List<int> vendorIds);
+
+    Task<List<WeddingEvent>> GetAllAsync();
 }

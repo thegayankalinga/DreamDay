@@ -1,0 +1,165 @@
+﻿@model IEnumerable<DreamDay.Models.Vendor>
+@using DreamDay.Data.Enums
+
+@{
+    ViewData["Title"] = "Vendor Management";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Vendor Management</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vendors</li>
+    </ol>
+    
+    <!-- Filter/Search Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-filter me-1"></i>
+                Filter Vendors
+            </div>
+            <div>
+                <a asp-controller="Vendor" asp-action="Create" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Add New Vendor
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="serviceTypeFilter" class="form-label">Service Type</label>
+                    <select id="serviceTypeFilter" class="form-select" onchange="filterByServiceType()">
+                        <option value="">All Service Types</option>
+                        @foreach (VendorServiceTypes serviceType in ViewBag.ServiceTypes)
+                        {
+                            <option value="@serviceType">@serviceType</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="vendorSearchInput" class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" id="vendorSearchInput" class="form-control" placeholder="Search by name...">
+                        <button class="btn btn-primary" type="button" onclick="searchVendors()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendors Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Vendors
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="vendorsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Service Type</th>
+                            <th>Description</th>
+                            <th>Contact</th>
+                            <th>Price Range</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var vendor in Model)
+                        {
+                            <tr class="vendor-row" data-service-type="@vendor.ServiceType.ToString().ToLower()">
+                                <td>@vendor.Name</td>
+                                <td>@vendor.ServiceType</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(vendor.ContactInfo) && vendor.ContactInfo.Length > 50)
+                                    {
+                                        @(vendor.ContactInfo.Substring(0, 50) + "...")
+                                    }
+                                    else
+                                    {
+                                        @vendor.ContactInfo
+                                    }
+                                </td>
+                                @* <td> *@
+                                @*     @vendor.ContactEmail<br /> *@
+                                @*     @vendor.ContactPhone *@
+                                @* </td> *@
+                                @* <td>@vendor.PriceRange</td> *@
+                                @* <td>@vendor.Rating / 5</td> *@
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-controller="Vendor" asp-action="Details" asp-route-id="@vendor.Id" 
+                                           class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="Vendor" asp-action="Edit" asp-route-id="@vendor.Id" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-controller="Vendor" asp-action="Delete" asp-route-id="@vendor.Id" 
+                                           class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Filter vendors by service type
+        function filterByServiceType() {
+            const serviceType = document.getElementById('serviceTypeFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('.vendor-row');
+            
+            rows.forEach(row => {
+                if (serviceType === '') {
+                    row.style.display = '';
+                } else {
+                    const rowServiceType = row.getAttribute('data-service-type').toLowerCase();
+                    if (rowServiceType === serviceType) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
+        // Search vendors by name
+        function searchVendors() {
+            const searchTerm = document.getElementById('vendorSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.vendor-row');
+            
+            rows.forEach(row => {
+                const vendorName = row.querySelector('td:first-child').textContent.toLowerCase();
+                if (vendorName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize data table
+        document.addEventListener('DOMContentLoaded', function() {
+            // If you want to use simple-datatables
+            const vendorsTable = document.getElementById('vendorsTable');
+            if (vendorsTable) {
+                new simpleDatatables.DataTable(vendorsTable);
+            }
+        });
+    </script>
+}

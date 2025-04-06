@@ -12,12 +12,17 @@ public class AppUser: IdentityUser
     [MaxLength(100)]
     public string? LastName { get; set; }
     
+    //One to one couple profile
     public CoupleProfile? CoupleProfile { get; set; }
     
-    public ICollection<CoupleProfile>? AssignedCoupleProfiles { get; set; }
-    public ICollection<Checklist>? AssignedChecklists { get; set; }
-    public ICollection<Guest>? AssignedGuests { get; set; }
-    public ICollection<BudgetCategory>? AssignedBudgetCategories { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    
+    //one to one planner profile
+    public PlannerProfile? PlannerProfile { get; set; }
+    public ICollection<CoupleProfile>? AssignedCoupleProfiles { get; set; } //if he is a planner
+    public ICollection<Checklist>? AssignedChecklists { get; set; } //if he is a couple
+    public ICollection<Guest>? AssignedGuests { get; set; } //if he is a couple
+    public ICollection<BudgetCategory>? AssignedBudgetCategories { get; set; } // if he is a couple
 
 
     [NotMapped] 
