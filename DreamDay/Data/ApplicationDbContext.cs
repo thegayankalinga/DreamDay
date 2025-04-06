@@ -21,6 +21,20 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
             entity.Property(e => e.Id).HasMaxLength(450); // 450 is common for string IDs
         });
         
+        //wedding event
+        modelBuilder.Entity<WeddingEventVendor>()
+            .HasKey(tv => new { tv.TimelineEventId, tv.VendorId });
+
+        modelBuilder.Entity<WeddingEventVendor>()
+            .HasOne(tv => tv.WeddingEvent)
+            .WithMany(te => te.WeddingEventVendors)
+            .HasForeignKey(tv => tv.TimelineEventId);
+
+        modelBuilder.Entity<WeddingEventVendor>()
+            .HasOne(tv => tv.Vendor)
+            .WithMany(v => v.WeddingEventVendors)
+            .HasForeignKey(tv => tv.VendorId);
+        
         // Checklist
         modelBuilder.Entity<Checklist>()
             .HasMany(c => c.Items)
