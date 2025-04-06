@@ -1,4 +1,5 @@
 ﻿using DreamDay.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DreamDay.ViewModels;
 
@@ -13,4 +14,8 @@ public class CoupleDashboardViewModel
     public List<Guest> Guests { get; set; } = new List<Guest>();
     public bool IsBudgetTrackerReady => false;
     public bool IsTimelineReady => false;
+    
+    public BudgetSummaryViewModel? BudgetSummary { get; set; }
+    public IEnumerable<SelectListItem>? BudgetCategories { get; set; }
+    public AddExpenseVeiwModel? NewExpense { get; set; }
 }

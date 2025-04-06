@@ -19,4 +19,7 @@ public class BudgetCategory
     public required string UserId { get; set; }
     public AppUser? AppUser { get; set; }
     public ICollection<Expense>? Expenses { get; set; }
+    
+    [NotMapped]
+    public decimal TotalSpent => Expenses?.Sum(e => e.Amount) ?? 0;
 }

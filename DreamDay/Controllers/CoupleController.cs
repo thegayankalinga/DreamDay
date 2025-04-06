@@ -3,6 +3,7 @@ using DreamDay.Models;
 using DreamDay.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DreamDay.Controllers
 {
@@ -14,17 +15,20 @@ namespace DreamDay.Controllers
         private readonly IChecklistRepository _checklistRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IGuestRepository _guestRepository;
+        private readonly IBudgetRepository _budgetRepository;
 
     public CoupleController(
         IUserProfileRepository userProfileRepository, 
         IChecklistRepository checklistRepository, 
         IItemRepository itemRepository,
-        IGuestRepository guestRepository)
+        IGuestRepository guestRepository, 
+        IBudgetRepository budgetRepository)
     {
         _userProfileRepository = userProfileRepository;
         _checklistRepository = checklistRepository;
         _itemRepository = itemRepository;
         _guestRepository = guestRepository;
+        _budgetRepository = budgetRepository;
     }
     
     [Authorize(Policy = "RequireCoupleRole")]
@@ -44,13 +48,23 @@ namespace DreamDay.Controllers
             Console.WriteLine("Current user not found");
             return RedirectToAction("Index", "Home");
         }
+        
+        var categories = await _budgetRepository.GetAllCategoriesByUserIdAsync(currentUser.Id);
+        
+
 
         var coupleDashboardViewModel = new CoupleDashboardViewModel
         {
             FullCoupleName = $"{currentUser.FirstName} & {coupleProfile.PartnerName}",
             WeddingDate = coupleProfile.WeddingDate,
             Checklists = await _checklistRepository.GetAllChecklistsByUserAsync(currentUser.Id),
-            Guests = await _guestRepository.GetAllGuestUsingAppUserIdAsync(currentUser.Id)
+            Guests = await _guestRepository.GetAllGuestUsingAppUserIdAsync(currentUser.Id),
+            BudgetCategories = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList(),
+            
         };
         
         return View(coupleDashboardViewModel);

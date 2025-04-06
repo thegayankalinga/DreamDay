@@ -75,15 +75,152 @@
         </div>
 
         <!-- 💰 Budget Tracker -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">💰 Budget Tracker</h4>
-                    <p class="card-text">Track your wedding expenses and stay on budget.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+        @if (Model.BudgetSummary?.Top3Categories is null)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 h-100 bg-light">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h4 class="card-title mb-2">
+                                    <i class="bi bi-wallet2 me-2"></i>💰 Budget Overview
+                                </h4>
+                                <a asp-page="/Budget/Index" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-bar-chart-fill me-1"></i> View Details
+                                </a>
+                            </div>
+                            <p class="text-muted mb-3">
+                                Track your wedding expenses and stay within your budget effortlessly.
+                            </p>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-auto">
+                            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                ➕ Add New Expense
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+        }
+        else
+        {
+            <div class="card my-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">💰 Budget Overview</h5>
+                    <a asp-page="/Budget/Index" class="btn btn-outline-primary btn-sm">Go to Budget Page</a>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h6>Total Allocated</h6>
+                            <h4>@Model.BudgetSummary.TotalAllocated.ToString("C")</h4>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Total Utilized</h6>
+                            <h4>@Model.BudgetSummary.TotalSpent.ToString("C")</h4>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Status</h6>
+                            @if (Model.BudgetSummary.IsOverBudget)
+                            {
+                                <span class="badge bg-danger">Over Budget</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Within Budget</span>
+                            }
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <h6>Top 3 Highest Budget Categories</h6>
+                    <div class="row">
+                        @if (Model.BudgetSummary.Top3Categories != null)
+                        {
+                            foreach (var cat in Model.BudgetSummary.Top3Categories)
+                            {
+                                var utilization = cat.TotalSpent / cat.AllocatedAmount * 100;
+                                <div class="col-md-4 mb-3">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@cat.Name</h6>
+                                            <p class="mb-1">Allocated: @cat.AllocatedAmount.ToString("C")</p>
+                                            <p class="mb-1">Spent: @cat.TotalSpent.ToString("C")</p>
+                                            <div class="progress">
+                                                <div class="progress-bar @((utilization > 100) ? "bg-danger" : "bg-success")"
+                                                     role="progressbar"
+                                                     style="width: @utilization%"
+                                                     aria-valuenow="@utilization"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                    @utilization.ToString("0")%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <button class="btn btn-outline-secondary mt-3" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                        ➕ Add Expense
+                    </button>
+                </div>
+            </div>
+        }
+        <!-- Modal -->
+        <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form asp-page-handler="AddExpense" method="post" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addExpenseModalLabel">Add New Expense</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label asp-for="NewExpense.BudgetCategoryId" class="form-label">Category</label>
+
+                            @if (Model.BudgetCategories == null || !Model.BudgetCategories.Any())
+                            {
+                                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    No budget categories found. Please set up your budget first.
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a asp-page="/Budget/Index" class="btn btn-primary">Go to Budget Page</a>
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <select asp-for="NewExpense.BudgetCategoryId" class="form-select" asp-items="Model.BudgetCategories"></select>
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NewExpense.Description" class="form-label">Description</label>
+                            <input asp-for="NewExpense.Description" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NewExpense.Amount" class="form-label">Amount</label>
+                            <input asp-for="NewExpense.Amount" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NewExpense.Date" class="form-label">Date</label>
+                            <input asp-for="NewExpense.Date" type="date" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Expense</button>
+                    </div>
+                </form>
+            </div>
         </div>
+        
 
         <!-- 📅 Timeline -->
         <div class="col-md-6 mb-4">
