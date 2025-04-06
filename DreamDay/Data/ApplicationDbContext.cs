@@ -58,13 +58,12 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     //You can  get a property by typing "prop"
     
     public DbSet<AppUser> AppUsers { get; set; }
-
     public DbSet <PlannerProfile> PlannerProfiles { get; set; }
     public DbSet <CoupleProfile> CoupleProfiles { get; set; }
-    
     public DbSet<Checklist> Checklists { get; set; }
     public DbSet<ChecklistItem> ChecklistItems { get; set; }
-    
     public DbSet<Guest> Guests { get; set; }
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<BudgetCategory> BudgetCategories { get; set; }
 
 }

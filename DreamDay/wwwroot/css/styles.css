@@ -11,12 +11,6 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -10902,32 +10896,6 @@ body {
   z-index: 1037;
   opacity: 0.5;
   transition: opacity 0.3s ease-in-out;
-}
-
-/* Sidebar collapsed state - icons only */
-.sb-sidenav-collapsed {
-  width: 80px !important;
-  overflow-x: visible;
-}
-
-.sb-sidenav-collapsed .sb-sidenav-menu .nav-link {
-  text-align: center;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.sb-sidenav-collapsed .sb-sidenav-menu .nav-link .sb-nav-link-icon {
-  margin-right: 0;
-}
-
-.sb-sidenav-collapsed .sb-sidenav-menu .nav-link span,
-.sb-sidenav-collapsed .sb-sidenav-menu-heading,
-.sb-sidenav-collapsed .sb-sidenav-collapse-arrow {
-  display: none !important;
-}
-
-.sb-sidenav-collapsed .sb-sidenav-footer {
-  display: none;
 }
 
 @media (min-width: 992px) {

@@ -7,6 +7,7 @@ public class Expense
 {
     [Key]
     public int Id { get; set; }
+    
     [ForeignKey("BudgetCategory")]
     public int BudgetCategoryId { get; set; }
     public BudgetCategory? BudgetCategory { get; set; }
