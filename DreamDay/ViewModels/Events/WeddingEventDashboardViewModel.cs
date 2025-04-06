@@ -10,4 +10,5 @@ public class WeddingEventDashboardViewModel
     public WeddingEventCreateViewModel NewEvent { get; set; } = new WeddingEventCreateViewModel();
 
     public SelectList? AvailableVenues { get; set; }
+    public SelectList? AvailableChecklists { get; set; }
 }

@@ -4,19 +4,23 @@
 
 <!-- Cards -->
 <div class="row">
-@foreach (var evt in Model.Events)
-{
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">@evt.Title</h5>
-                <p class="card-text">@evt.StartTime.ToString("g") - @evt.EndTime.ToString("g")</p>
-                <p class="card-text"><strong>Venue:</strong> @evt.Venue?.Name ?? "Not assigned"</p>
-                <a href="@Url.Action("Details", "Event", new { id = evt.Id })" class="btn btn-primary">View / Edit</a>
+    @if (Model.Events != null)
+    {
+        foreach (var evt in Model.Events)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">@evt.Title</h5>
+                        <p class="card-text">@evt.StartTime.ToString("g") - @evt.EndTime.ToString("g")</p>
+                        <p class="card-text"><strong>Venue:</strong> @evt.Venue?.Name</p>
+                        <p class="card-text"><strong>Checklist:</strong> @evt.Checklist?.Title</p>
+                        <a href="@Url.Action("Details", "Event", new { id = evt.Id })" class="btn btn-primary">View / Edit</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-}
+        }
+    }
 </div>
 
 <!-- Add Event Button -->
@@ -25,7 +29,7 @@
 <!-- Modal -->
 <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form asp-action="Create" method="post">
+    <form asp-action="CreateEvent" asp-controller="Event" method="post">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
@@ -55,7 +59,12 @@
                 </select>
             </div>
             <!-- Optional: ChecklistId as hidden or dropdown -->
-            <input type="hidden" asp-for="NewEvent.ChecklistId" value="1" />
+            <div class="mb-3">
+                <label asp-for="NewEvent.ChecklistId" class="form-label">Checklist (Optional)</label>
+                <select asp-for="NewEvent.ChecklistId" class="form-control" asp-items="Model.AvailableChecklists">
+                    <option value="">-- Select Checklist --</option>
+                </select>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-success">Create Event</button>
