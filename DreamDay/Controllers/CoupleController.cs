@@ -16,19 +16,21 @@ namespace DreamDay.Controllers
         private readonly IItemRepository _itemRepository;
         private readonly IGuestRepository _guestRepository;
         private readonly IBudgetRepository _budgetRepository;
+        private readonly IWeddingEventRepository _weddingRepository;
 
     public CoupleController(
         IUserProfileRepository userProfileRepository, 
         IChecklistRepository checklistRepository, 
         IItemRepository itemRepository,
         IGuestRepository guestRepository, 
-        IBudgetRepository budgetRepository)
+        IBudgetRepository budgetRepository, IWeddingEventRepository weddingRepository)
     {
         _userProfileRepository = userProfileRepository;
         _checklistRepository = checklistRepository;
         _itemRepository = itemRepository;
         _guestRepository = guestRepository;
         _budgetRepository = budgetRepository;
+        _weddingRepository = weddingRepository;
     }
     
     [Authorize(Policy = "RequireCoupleRole")]
@@ -56,6 +58,15 @@ namespace DreamDay.Controllers
             .Take(3)
             .ToList();
 
+        var today = DateTime.Today;
+        var nextWeek = today.AddDays(7);
+        
+        var upComingEvents = await _weddingRepository.GetAllByUserIdAsync(currentUser.Id);
+        var filteredEvents =
+            upComingEvents.Where(e => e.StartTime >= today && e.StartTime <= nextWeek && e.EndTime >= today)
+                .OrderBy(e => e.StartTime)
+                .ToList();
+        
         var coupleDashboardViewModel = new CoupleDashboardViewModel
         {
             FullCoupleName = $"{currentUser.FirstName} & {coupleProfile.PartnerName}",
@@ -72,7 +83,9 @@ namespace DreamDay.Controllers
                 TotalAllocated = currentUser.TotalAllocated,
                 TotalSpent = currentUser.TotalUtilized,
                 Top3Categories = top3Categories
-            }
+            },
+            WeddingEvents = upComingEvents
+            
             
         };
         

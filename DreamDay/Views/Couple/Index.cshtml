@@ -172,6 +172,7 @@
                 </div>
             </div>
         }
+        
         <!-- Modal -->
         <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -229,14 +230,92 @@
         
 
         <!-- 📅 Timeline -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title">📅 Timeline Management</h4>
-                    <p class="card-text">Plan and visualize your wedding day schedule.</p>
-                    <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+        @if (Model.WeddingEvents is null)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="card-title">📅 Timeline Management</h4>
+                        <p class="card-text">Plan and visualize your wedding day schedule.</p>
+                        <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title">
+                                <i class="bi bi-calendar2-week me-2"></i> Timeline Management
+                            </h4>
+                            <a href="@Url.Action("Index", "Event")" class="btn btn-outline-primary btn-sm">
+                                Go to Events Dashboard
+                            </a>
+                        </div>
+
+                        @if (Model.WeddingEvents == null || !Model.WeddingEvents.Any())
+                        {
+                            <div class="alert alert-info text-center">
+                                No upcoming events scheduled in the next few days.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="timeline-scroll d-flex flex-column gap-3">
+                                @foreach (var evt in Model.WeddingEvents)
+                                {
+                                    var daysLeft = (evt.StartTime.Date - DateTime.Today).Days;
+                                    string statusBadge;
+                                    if (daysLeft < 0)
+                                        statusBadge = "secondary";
+                                    else if (daysLeft == 0)
+                                        statusBadge = "warning";
+                                    else if (daysLeft <= 3)
+                                        statusBadge = "danger";
+                                    else
+                                        statusBadge = "success";
+
+                                    <div class="card border-start border-4 border-@statusBadge shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark">@evt.Title</h5>
+                                            <p class="card-subtitle mb-1 text-muted">
+                                                <i class="bi bi-clock"></i> @evt.StartTime.ToString("f") → @evt.EndTime.ToString("t")
+                                            </p>
+                                            <p class="mb-2">
+                                                <span class="badge bg-@statusBadge">
+                                                    @(
+                                                    daysLeft < 0 ? "Past" :
+                                                    daysLeft == 0 ? "Today!" :
+                                                    $"{daysLeft} day(s) to go"
+                                                    )
+                                                </span>
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(evt.Venue?.Name))
+                                            {
+                                                <p class="mb-0"><strong>📍 Venue:</strong> @evt.Venue.Name</p>
+                                            }
+                                            @if (!string.IsNullOrEmpty(evt.Checklist?.Title))
+                                            {
+                                                <p class="mb-0"><strong>✅ Checklist:</strong> @evt.Checklist.Title</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </main>
+
+<style>
+    .timeline-scroll {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>

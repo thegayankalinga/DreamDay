@@ -45,6 +45,10 @@ public class EventController : Controller
         var viewModel = new WeddingEventDashboardViewModel
         {
             Events = events,
+            NewEvent = new WeddingEventCreateViewModel
+            {
+                Title = ""
+            },
             AvailableVenues = new SelectList(venues, "Id", "Name"),
             AvailableChecklists = new SelectList(checklists, "Id", "Title")
         };
@@ -59,8 +63,16 @@ public class EventController : Controller
         var userId = _userProfileRepository.CurrentUser?.Id;
         if (userId == null) return RedirectToAction("Login", "Account");
         
-        var newEvent = new WeddingEvent
+        // Validation
+        if (string.IsNullOrWhiteSpace(model.NewEvent.Title))
         {
+            // Could add ModelState errors here and return to view with validation errors
+            return RedirectToAction("Index");
+        }
+        
+        var eventToSave = new WeddingEvent
+        {
+            Id = model.NewEvent.Id, // This will be 0 for new events, or the existing ID for updates
             Title = model.NewEvent.Title,
             Description = model.NewEvent.Description,
             StartTime = model.NewEvent.StartTime,
@@ -69,10 +81,55 @@ public class EventController : Controller
             ChecklistId = model.NewEvent.ChecklistId,
             VenueId = model.NewEvent.VenueId,
             UserId = userId
-
         };
-        await _weddingEventRepository.AddAsync(newEvent, userId);
+
+        if (model.NewEvent.Id == 0)
+        {
+            // Create new event
+            await _weddingEventRepository.AddAsync(eventToSave, userId);
+        }
+        else
+        {
+            // Update existing event
+            var existingEvent = await _weddingEventRepository.GetByIdAsync(model.NewEvent.Id);
+            if (existingEvent == null || existingEvent.UserId != userId)
+            {
+                // Event not found or doesn't belong to current user
+                return RedirectToAction("Index");
+            }
+            
+            await _weddingEventRepository.UpdateAsync(eventToSave, model.NewEvent.Id);
+        }
         
         return RedirectToAction("Index");
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetEventJson(int id)
+    {
+        var userId = _userProfileRepository.CurrentUser?.Id;
+        if (userId == null) return Unauthorized();
+        
+        var evt = await _weddingEventRepository.GetByIdAsync(id);
+        if (evt == null) return NotFound();
+        
+        // Verify that the event belongs to the current user
+        if (evt.UserId != userId) return Unauthorized();
+
+        // Format the datetime values carefully to ensure browser compatibility
+        // Format: yyyy-MM-ddTHH:mm (no seconds, no milliseconds)
+        string startTime = evt.StartTime.ToString("yyyy-MM-ddTHH:mm");
+        string endTime = evt.EndTime.ToString("yyyy-MM-ddTHH:mm");
+
+        return Json(new
+        {
+            evt.Id,
+            evt.Title,
+            evt.Description,
+            StartTime = startTime,
+            EndTime = endTime,
+            evt.VenueId,
+            evt.ChecklistId
+        });
     }
 }

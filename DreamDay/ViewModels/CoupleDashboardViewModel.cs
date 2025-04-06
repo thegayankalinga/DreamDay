@@ -18,4 +18,6 @@ public class CoupleDashboardViewModel
     public BudgetSummaryViewModel? BudgetSummary { get; set; }
     public IEnumerable<SelectListItem>? BudgetCategories { get; set; }
     public AddExpenseVeiwModel? NewExpense { get; set; }
+    
+    public List<WeddingEvent>? WeddingEvents { get; set; }
 }

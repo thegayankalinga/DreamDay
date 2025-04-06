@@ -17,7 +17,8 @@ public class WeddingEvent
 
     [MaxLength(100)] public string? Location { get; set; }
 
-    [ForeignKey("Checklist")] public int ChecklistId { get; set; }
+    [ForeignKey("Checklist")] 
+    public int? ChecklistId { get; set; }
     public Checklist? Checklist { get; set; }
     
     [ForeignKey("AppUser")] 

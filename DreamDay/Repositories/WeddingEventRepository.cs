@@ -38,6 +38,11 @@ public class WeddingEventRepository : IWeddingEventRepository
 
     public async Task<bool> AddAsync(WeddingEvent weddingEvent, string userId)
     {
+        var checklist = await _context.Checklists.FindAsync(weddingEvent.ChecklistId);
+        if (checklist == null)
+        {
+            weddingEvent.ChecklistId = null;
+        }
         _context.WeddingEvents.Add(weddingEvent);
         return await _context.SaveChangesAsync() > 0;
     }
