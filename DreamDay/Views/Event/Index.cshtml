@@ -8,13 +8,19 @@
 <main class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary mb-0"><i class="bi bi-heart-fill me-2"></i>My Wedding Events</h2>
-        <button class="btn btn-primary rounded-pill shadow-sm" onclick="openAddEventModal()">
-            <i class="bi bi-plus-circle me-2"></i>Add New Event
-        </button>
+        <div class="d-flex gap-3 align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="showPastEvents">
+                <label class="form-check-label" for="showPastEvents">Show Past Events</label>
+            </div>
+            <button class="btn btn-primary rounded-pill shadow-sm" onclick="openAddEventModal()">
+                <i class="bi bi-plus-circle me-2"></i>Add New Event
+            </button>
+        </div>
     </div>
 
     <!-- Cards -->
-    <div class="row g-4">
+    <div class="row g-4" id="eventsContainer">
         @if (Model.Events != null && Model.Events.Any())
         {
             foreach (var evt in Model.Events)
@@ -24,7 +30,7 @@
                 var badgeColor = isPast ? "danger" : daysLeft == 0 ? "warning" : "success";
                 var cardBorderClass = isPast ? "border-danger" : daysLeft == 0 ? "border-warning" : "";
 
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4 event-card @(isPast ? "past-event" : "")">
                     <div class="card h-100 shadow hover-shadow transition-all border-start @cardBorderClass" style="border-left-width: 5px;">
                         <div class="card-body d-flex flex-column justify-content-between">
                             <div>
@@ -76,19 +82,31 @@
         }
         else
         {
-            <div class="col-12">
+            <div class="col-12" id="noEventsMessage">
                 <div class="card border-0 shadow-sm p-4 text-center">
                     <div class="py-5">
                         <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
                         <h4>No Events Yet</h4>
                         <p class="text-muted">Start planning your special day by adding your first event.</p>
-                        <button class="btn btn-primary rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                        <button class="btn btn-primary rounded-pill mt-2" onclick="openAddEventModal()">
                             <i class="bi bi-plus-circle me-2"></i>Add First Event
                         </button>
                     </div>
                 </div>
             </div>
         }
+    </div>
+
+    <!-- Hidden message for when no upcoming events are visible -->
+    <div class="card border-0 shadow-sm p-4 text-center d-none" id="noUpcomingEventsMessage">
+        <div class="py-5">
+            <i class="bi bi-calendar-check display-1 text-muted mb-3"></i>
+            <h4>No Upcoming Events</h4>
+            <p class="text-muted">All your events have passed. Time to add new ones!</p>
+            <button class="btn btn-primary rounded-pill mt-2" onclick="openAddEventModal()">
+                <i class="bi bi-plus-circle me-2"></i>Add New Event
+            </button>
+        </div>
     </div>
 </main>
 
@@ -166,6 +184,47 @@
 </div>
 
 <script>
+
+    // Event filter toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const showPastEventsToggle = document.getElementById('showPastEvents');
+        const pastEvents = document.querySelectorAll('.past-event');
+        const noEventsMessage = document.getElementById('noEventsMessage');
+        const noUpcomingEventsMessage = document.getElementById('noUpcomingEventsMessage');
+        const eventsContainer = document.getElementById('eventsContainer');
+
+        showPastEventsToggle.addEventListener('change', function() {
+            const showPastEvents = this.checked;
+
+            // Toggle visibility of past events
+            pastEvents.forEach(event => {
+                event.style.display = showPastEvents ? 'block' : 'none';
+            });
+
+            // Check if we need to show "no upcoming events" message
+            const hasVisibleEvents = document.querySelectorAll('.event-card:not(.past-event)').length > 0;
+            const hasPastEvents = pastEvents.length > 0;
+
+            // Handle the case where all events are past events
+            if (!hasVisibleEvents && hasPastEvents) {
+                eventsContainer.classList.add('d-none');
+                noUpcomingEventsMessage.classList.remove('d-none');
+            } else {
+                eventsContainer.classList.remove('d-none');
+                noUpcomingEventsMessage.classList.add('d-none');
+            }
+
+            // Handle the case where no events exist at all
+            if (document.querySelectorAll('.event-card').length === 0) {
+                noEventsMessage.classList.remove('d-none');
+            } else {
+                noEventsMessage.classList.add('d-none');
+            }
+        });
+
+        // Initial call to set correct state on page load
+        showPastEventsToggle.dispatchEvent(new Event('change'));
+    });
     // Function to handle opening the modal for add new event
     function openAddEventModal() {
         // Reset form
@@ -234,4 +293,5 @@
         
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
+
 </script>

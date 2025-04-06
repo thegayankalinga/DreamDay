@@ -59,13 +59,18 @@ namespace DreamDay.Controllers
             .ToList();
 
         var today = DateTime.Today;
-        var nextWeek = today.AddDays(7);
+        var oneWeekBack = today.AddDays(-7);
+        var fourWeeksAhead = today.AddDays(28);
         
         var upComingEvents = await _weddingRepository.GetAllByUserIdAsync(currentUser.Id);
-        var filteredEvents =
-            upComingEvents.Where(e => e.StartTime >= today && e.StartTime <= nextWeek && e.EndTime >= today)
-                .OrderBy(e => e.StartTime)
-                .ToList();
+        var filteredEvents = upComingEvents
+            .Where(e =>
+                e.StartTime != DateTime.MinValue &&
+                e.EndTime != DateTime.MinValue &&
+                e.StartTime.Date >= oneWeekBack &&
+                e.StartTime.Date <= fourWeeksAhead)
+            .OrderBy(e => e.StartTime)
+            .ToList();
         
         var coupleDashboardViewModel = new CoupleDashboardViewModel
         {
@@ -84,7 +89,7 @@ namespace DreamDay.Controllers
                 TotalSpent = currentUser.TotalUtilized,
                 Top3Categories = top3Categories
             },
-            WeddingEvents = upComingEvents
+            WeddingEvents = filteredEvents
             
             
         };
