@@ -1,0 +1,209 @@
+﻿@model IEnumerable<DreamDay.Models.Venue>
+
+@{
+    ViewData["Title"] = "Venue Management";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Venue Management</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Venues</li>
+    </ol>
+    
+    <!-- Filter/Search Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-filter me-1"></i>
+                Search Venues
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addVenueModal">
+                    <i class="fas fa-plus"></i> Add New Venue
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="input-group">
+                        <input type="text" id="venueSearchInput" class="form-control" placeholder="Search by name or address...">
+                        <button class="btn btn-primary" type="button" onclick="searchVenues()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Venues Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Venue List
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="venuesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Associated Events</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var venue in Model)
+                        {
+                            <tr class="venue-row">
+                                <td>@venue.Name</td>
+                                <td>@(venue.Address ?? "No address provided")</td>
+                                <td>@(venue.WeddingEvents != null ? venue.WeddingEvents.Count : 0)</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-primary" 
+                                                data-bs-toggle="modal" data-bs-target="#editVenueModal" 
+                                                onclick="editVenue(@venue.Id, '@venue.Name', '@(venue.Address ?? "")')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteVenueModal" 
+                                                onclick="prepareDelete(@venue.Id, '@venue.Name')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Venue Modal -->
+<div class="modal fade" id="addVenueModal" tabindex="-1" aria-labelledby="addVenueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addVenueModalLabel">Add New Venue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Venue" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="venueName" class="form-label">Venue Name</label>
+                        <input type="text" class="form-control" id="venueName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="venueAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="venueAddress" name="Address" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create Venue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Venue Modal -->
+<div class="modal fade" id="editVenueModal" tabindex="-1" aria-labelledby="editVenueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editVenueModalLabel">Edit Venue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Venue" asp-action="Edit" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="editVenueId" name="id">
+                    <div class="mb-3">
+                        <label for="editVenueName" class="form-label">Venue Name</label>
+                        <input type="text" class="form-control" id="editVenueName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editVenueAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="editVenueAddress" name="Address" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Venue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Venue Modal -->
+<div class="modal fade" id="deleteVenueModal" tabindex="-1" aria-labelledby="deleteVenueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteVenueModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <span id="deleteVenueName"></span>?</p>
+                <p class="text-danger">This action cannot be undone. Events associated with this venue will be updated to have no venue.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-controller="Venue" asp-action="Delete" method="post">
+                    <input type="hidden" id="deleteVenueId" name="id">
+                    <button type="submit" class="btn btn-danger">Delete Venue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search venues by name or address
+        function searchVenues() {
+            const searchTerm = document.getElementById('venueSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.venue-row');
+            
+            rows.forEach(row => {
+                const venueName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                const venueAddress = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                
+                if (venueName.includes(searchTerm) || venueAddress.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Prepare edit venue modal
+        function editVenue(id, name, address) {
+            document.getElementById('editVenueId').value = id;
+            document.getElementById('editVenueName').value = name;
+            document.getElementById('editVenueAddress').value = address;
+        }
+        
+        // Prepare delete venue modal
+        function prepareDelete(id, name) {
+            document.getElementById('deleteVenueId').value = id;
+            document.getElementById('deleteVenueName').textContent = name;
+        }
+        
+        // Initialize data table
+        document.addEventListener('DOMContentLoaded', function() {
+            // If you want to use simple-datatables
+            const venuesTable = document.getElementById('venuesTable');
+            if (venuesTable) {
+                new simpleDatatables.DataTable(venuesTable);
+            }
+        });
+    </script>
+}

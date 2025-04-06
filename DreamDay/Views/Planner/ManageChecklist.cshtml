@@ -1,0 +1,496 @@
+﻿@model DreamDay.ViewModels.ManageChecklistViewModel
+@{
+    ViewData["Title"] = "Manage Checklist";
+    Layout = "_Dashboard";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Manage Checklist</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Planner" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Planner" asp-action="WeddingDetails" asp-route-id="@Model.WeddingId">Wedding Details</a></li>
+        <li class="breadcrumb-item active">Manage Checklist</li>
+    </ol>
+
+    <!-- Wedding Info Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-info-circle me-1"></i>
+            Wedding Information
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Couple:</strong> @Model.CoupleName</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Wedding Date:</strong> @Model.WeddingDate.ToString("dddd, MMMM d, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checklist Management -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-tasks me-1"></i>
+                Checklist Items
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addChecklistItemModal">
+                    <i class="fas fa-plus me-1"></i> Add Item
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Progress Overview -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5>Checklist Progress</h5>
+                    @{
+                        var completedCount = Model.ChecklistItems.Count(i => i.IsCompleted);
+                        var totalCount = Model.ChecklistItems.Count;
+                        var progressPercentage = totalCount > 0 ? (int)Math.Round((double)completedCount / totalCount * 100) : 0;
+                    }
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @progressPercentage%;" 
+                             aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                            @progressPercentage% Complete (@completedCount of @totalCount tasks)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="Venue">Venue</option>
+                        <option value="Catering">Catering</option>
+                        <option value="Photography">Photography</option>
+                        <option value="Attire">Attire</option>
+                        <option value="Decoration">Decoration</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Invitations">Invitations</option>
+                        <option value="Honeymoon">Honeymoon</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Overdue">Overdue</option>
+                    </select>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-warning me-2">Pending: @Model.ChecklistItems.Count(i => i.Status == "Pending")</span>
+                    <span class="badge bg-danger me-2">Overdue: @Model.ChecklistItems.Count(i => i.Status == "Overdue")</span>
+                    <span class="badge bg-success">Completed: @Model.ChecklistItems.Count(i => i.Status == "Completed")</span>
+                </div>
+            </div>
+
+            <!-- Checklist Table -->
+            <div class="table-responsive">
+                <table id="checklistTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ChecklistItems)
+                        {
+                            var statusClass = item.Status == "Completed" ? "bg-success" :
+                                             item.Status == "Overdue" ? "bg-danger" : "bg-warning";
+                                             
+                            <tr data-category="@item.Category" data-status="@item.Status">
+                                <td>@item.Name</td>
+                                <td>@item.Category</td>
+                                <td>@item.Description</td>
+                                <td>@item.DueDate.ToShortDateString()</td>
+                                <td><span class="badge @statusClass">@item.Status</span></td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input task-checkbox" type="checkbox" 
+                                               data-id="@item.Id" @(item.IsCompleted ? "checked" : "")>
+                                        <label class="form-check-label">Complete</label>
+                                    </div>
+                                    <button class="btn btn-sm btn-info edit-task" data-id="@item.Id" data-bs-toggle="modal" 
+                                            data-bs-target="#editChecklistItemModal">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-task" data-id="@item.Id">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-pie me-1"></i>
+            Task Categories Summary
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="categoriesChart" width="100%" height="40"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="statusChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Checklist Item Modal -->
+<div class="modal fade" id="addChecklistItemModal" tabindex="-1" aria-labelledby="addChecklistItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addChecklistItemModalLabel">Add Checklist Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addChecklistItemForm" asp-controller="Planner" asp-action="AddChecklistItem" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="WeddingId" value="@Model.WeddingId" />
+                    
+                    <div class="mb-3">
+                        <label for="taskName" class="form-label">Task Name</label>
+                        <input type="text" class="form-control" id="taskName" name="Name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="taskCategory" class="form-label">Category</label>
+                        <select class="form-select" id="taskCategory" name="Category" required>
+                            <option value="Venue">Venue</option>
+                            <option value="Catering">Catering</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Attire">Attire</option>
+                            <option value="Decoration">Decoration</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Invitations">Invitations</option>
+                            <option value="Honeymoon">Honeymoon</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="taskDueDate" class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="taskDueDate" name="DueDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Checklist Item Modal -->
+<div class="modal fade" id="editChecklistItemModal" tabindex="-1" aria-labelledby="editChecklistItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editChecklistItemModalLabel">Edit Checklist Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editChecklistItemForm" asp-controller="Planner" asp-action="EditChecklistItem" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="editTaskId" name="Id" value="" />
+                    <input type="hidden" name="WeddingId" value="@Model.WeddingId" />
+                    
+                    <div class="mb-3">
+                        <label for="editTaskName" class="form-label">Task Name</label>
+                        <input type="text" class="form-control" id="editTaskName" name="Name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editTaskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editTaskDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editTaskCategory" class="form-label">Category</label>
+                        <select class="form-select" id="editTaskCategory" name="Category" required>
+                            <option value="Venue">Venue</option>
+                            <option value="Catering">Catering</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Attire">Attire</option>
+                            <option value="Decoration">Decoration</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Invitations">Invitations</option>
+                            <option value="Honeymoon">Honeymoon</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editTaskDueDate" class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="editTaskDueDate" name="DueDate" required>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editTaskIsCompleted" name="IsCompleted">
+                        <label class="form-check-label" for="editTaskIsCompleted">Mark as Completed</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize DataTable
+            const table = new simpleDatatables.DataTable("#checklistTable");
+            
+            // Category and Status Filtering
+            document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            
+            function applyFilters() {
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const statusFilter = document.getElementById('statusFilter').value;
+                
+                // Simple DataTables doesn't have built-in filtering, so we need to recreate the table
+                const rows = document.querySelectorAll('#checklistTable tbody tr');
+                
+                rows.forEach(row => {
+                    const category = row.getAttribute('data-category');
+                    const status = row.getAttribute('data-status');
+                    
+                    let showRow = true;
+                    
+                    if (categoryFilter && category !== categoryFilter) {
+                        showRow = false;
+                    }
+                    
+                    if (statusFilter && status !== statusFilter) {
+                        showRow = false;
+                    }
+                    
+                    row.style.display = showRow ? '' : 'none';
+                });
+            }
+            
+            // Task checkbox status update
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const taskId = this.getAttribute('data-id');
+                    const isCompleted = this.checked;
+                    
+                    fetch(`/Planner/UpdateChecklistItem?id=${taskId}&isCompleted=${isCompleted}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the UI to reflect the change
+                            const row = checkbox.closest('tr');
+                            const statusCell = row.querySelector('td:nth-child(5) .badge');
+                            
+                            if (isCompleted) {
+                                statusCell.textContent = 'Completed';
+                                statusCell.className = 'badge bg-success';
+                                row.setAttribute('data-status', 'Completed');
+                            } else {
+                                const dueDate = new Date(row.querySelector('td:nth-child(4)').textContent);
+                                const today = new Date();
+                                
+                                if (dueDate < today) {
+                                    statusCell.textContent = 'Overdue';
+                                    statusCell.className = 'badge bg-danger';
+                                    row.setAttribute('data-status', 'Overdue');
+                                } else {
+                                    statusCell.textContent = 'Pending';
+                                    statusCell.className = 'badge bg-warning';
+                                    row.setAttribute('data-status', 'Pending');
+                                }
+                            }
+                        } else {
+                            alert('Failed to update task status. Please try again.');
+                            checkbox.checked = !isCompleted; // Revert the change
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                        checkbox.checked = !isCompleted; // Revert the change
+                    });
+                });
+            });
+            
+            // Edit Task Button Event
+            document.querySelectorAll('.edit-task').forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = this.getAttribute('data-id');
+                    const row = this.closest('tr');
+                    
+                    const taskName = row.querySelector('td:nth-child(1)').textContent;
+                    const taskCategory = row.querySelector('td:nth-child(2)').textContent;
+                    const taskDescription = row.querySelector('td:nth-child(3)').textContent;
+                    const taskDueDate = row.querySelector('td:nth-child(4)').textContent;
+                    const taskStatus = row.querySelector('td:nth-child(5) .badge').textContent;
+                    
+                    // Format date for input field (YYYY-MM-DD)
+                    const dueDate = new Date(taskDueDate);
+                    const formattedDate = dueDate.toISOString().split('T')[0];
+                    
+                    // Fill the edit modal with the task data
+                    document.getElementById('editTaskId').value = taskId;
+                    document.getElementById('editTaskName').value = taskName;
+                    document.getElementById('editTaskDescription').value = taskDescription;
+                    document.getElementById('editTaskCategory').value = taskCategory;
+                    document.getElementById('editTaskDueDate').value = formattedDate;
+                    document.getElementById('editTaskIsCompleted').checked = taskStatus === 'Completed';
+                });
+            });
+            
+            // Delete Task Button Event
+            document.querySelectorAll('.delete-task').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this task?')) {
+                        const taskId = this.getAttribute('data-id');
+                        
+                        fetch(`/Planner/DeleteChecklistItem?id=${taskId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the row from the table
+                                this.closest('tr').remove();
+                                // Refresh the table to maintain proper styling
+                                table.refresh();
+                            } else {
+                                alert('Failed to delete task. Please try again.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                    }
+                });
+            });
+            
+            // Initialize Charts
+            const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            
+            // Prepare data for categories chart
+            const categories = @Html.Raw(Json.Serialize(Model.ChecklistItems.GroupBy(i => i.Category)
+                .Select(g => new { Category = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .ToList()));
+                
+            new Chart(categoriesCtx, {
+                type: 'pie',
+                data: {
+                    labels: categories.map(c => c.Category),
+                    datasets: [{
+                        data: categories.map(c => c.Count),
+                        backgroundColor: [
+                            'rgba(78, 115, 223, 0.8)',
+                            'rgba(28, 200, 138, 0.8)',
+                            'rgba(54, 185, 204, 0.8)',
+                            'rgba(246, 194, 62, 0.8)',
+                            'rgba(231, 74, 59, 0.8)',
+                            'rgba(90, 92, 105, 0.8)',
+                            'rgba(133, 135, 150, 0.8)',
+                            'rgba(0, 123, 255, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tasks by Category'
+                        }
+                    }
+                }
+            });
+            
+            // Prepare data for status chart
+            const statuses = [
+                { Status: 'Completed', Count: @Model.ChecklistItems.Count(i => i.Status == "Completed") },
+                { Status: 'Pending', Count: @Model.ChecklistItems.Count(i => i.Status == "Pending") },
+                { Status: 'Overdue', Count: @Model.ChecklistItems.Count(i => i.Status == "Overdue") }
+            ];
+            
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statuses.map(s => s.Status),
+                    datasets: [{
+                        data: statuses.map(s => s.Count),
+                        backgroundColor: [
+                            'rgba(28, 200, 138, 0.8)',
+                            'rgba(246, 194, 62, 0.8)',
+                            'rgba(231, 74, 59, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tasks by Status'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

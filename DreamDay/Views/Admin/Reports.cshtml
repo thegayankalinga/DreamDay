@@ -1,0 +1,292 @@
+﻿@model DreamDay.ViewModels.AdminReportViewModel
+
+@{
+    ViewData["Title"] = "System Reports";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">System Reports</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Reports</li>
+    </ol>
+    
+    <!-- Report Selection -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Available Reports
+                </div>
+                <div class="card-body">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-primary" onclick="showReport('popular-venues')">Popular Venues</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showReport('budget-analysis')">Budget Analysis</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showReport('user-registrations')">User Registrations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Venues Report -->
+    <div class="row mb-4 report-section" id="popular-venues-report">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    Popular Venues Report
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="venueChart" width="100%" height="50"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Venue</th>
+                                            <th>Bookings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var venue in Model.PopularVenues)
+                                        {
+                                            <tr>
+                                                <td>@venue.VenueName</td>
+                                                <td>@venue.BookingCount</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">
+                    This report shows the most frequently booked venues based on wedding events.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget Analysis Report -->
+    <div class="row mb-4 report-section" id="budget-analysis-report" style="display: none;">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-dollar-sign me-1"></i>
+                    Budget Analysis Report
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3 bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Average Wedding Budget</h5>
+                                    <h2 class="text-primary">$@Model.AverageBudget.ToString("N2")</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Budget Distribution</h5>
+                                    <canvas id="budgetDistributionChart" width="100%" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">
+                    This report analyzes budget data across all wedding couples in the system.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Registrations Report -->
+    <div class="row mb-4 report-section" id="user-registrations-report" style="display: none;">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-plus me-1"></i>
+                    User Registration Trends
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="registrationChart" width="100%" height="50"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>Registrations</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var month in Model.MonthlyRegistrations)
+                                        {
+                                            <tr>
+                                                <td>@month.MonthName</td>
+                                                <td>@month.Count</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">
+                    This report shows user registration trends over the past 12 months.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Function to toggle between report sections
+        function showReport(reportId) {
+            // Hide all report sections
+            document.querySelectorAll('.report-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected report section
+            document.getElementById(reportId + '-report').style.display = 'flex';
+            
+            // Update button styles
+            document.querySelectorAll('.btn-outline-primary, .btn-primary').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            document.querySelector(`button[onclick="showReport('${reportId}')"]`).classList.remove('btn-outline-primary');
+            document.querySelector(`button[onclick="showReport('${reportId}')"]`).classList.add('btn-primary');
+            
+            // Initialize charts after making the section visible
+            initializeCharts(reportId);
+        }
+        
+        // Initialize charts based on the selected report
+        function initializeCharts(reportId) {
+            if (reportId === 'popular-venues') {
+                initializeVenueChart();
+            } else if (reportId === 'budget-analysis') {
+                initializeBudgetChart();
+            } else if (reportId === 'user-registrations') {
+                initializeRegistrationChart();
+            }
+        }
+        
+        // Initialize the venue popularity chart
+        function initializeVenueChart() {
+            var ctx = document.getElementById('venueChart').getContext('2d');
+            
+            // Extract venue data from the model
+            var venueNames = [@Html.Raw(string.Join(",", Model.PopularVenues.Select(v => $"'{v.VenueName}'")))];
+            var bookingCounts = [@string.Join(",", Model.PopularVenues.Select(v => v.BookingCount))];
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: venueNames,
+                    datasets: [{
+                        label: 'Number of Bookings',
+                        data: bookingCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize the budget distribution chart (placeholder)
+        function initializeBudgetChart() {
+            var ctx = document.getElementById('budgetDistributionChart').getContext('2d');
+            
+            // Placeholder data - in a real application, you would use actual category data
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Venue', 'Catering', 'Photography', 'Attire', 'Decoration', 'Other'],
+                    datasets: [{
+                        data: [30, 20, 15, 10, 15, 10],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+        
+        // Initialize the user registration trend chart
+        function initializeRegistrationChart() {
+            var ctx = document.getElementById('registrationChart').getContext('2d');
+            
+            // Extract registration data from the model
+            var months = [@Html.Raw(string.Join(",", Model.MonthlyRegistrations.Select(m => $"'{m.MonthName}'")))];
+            var counts = [@string.Join(",", Model.MonthlyRegistrations.Select(m => m.Count))];
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'New Registrations',
+                        data: counts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize the default chart (Popular Venues) on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeVenueChart();
+        });
+    </script>
+}
