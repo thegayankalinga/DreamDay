@@ -1,18 +1,66 @@
-﻿@model TModel
+﻿@model DreamDay.ViewModels.Events.WeddingEventDashboardViewModel
 
-@{
-    Layout = null;
+<h2>My Wedding Events</h2>
+
+<!-- Cards -->
+<div class="row">
+@foreach (var evt in Model.Events)
+{
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@evt.Title</h5>
+                <p class="card-text">@evt.StartTime.ToString("g") - @evt.EndTime.ToString("g")</p>
+                <p class="card-text"><strong>Venue:</strong> @evt.Venue?.Name ?? "Not assigned"</p>
+                <a href="@Url.Action("Details", "Event", new { id = evt.Id })" class="btn btn-primary">View / Edit</a>
+            </div>
+        </div>
+    </div>
 }
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
 </div>
-</body>
-</html>
+
+<!-- Add Event Button -->
+<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEventModal">Add New Event</button>
+
+<!-- Modal -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form asp-action="Create" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label asp-for="NewEvent.Title" class="form-label"></label>
+                <input asp-for="NewEvent.Title" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewEvent.Description" class="form-label"></label>
+                <textarea asp-for="NewEvent.Description" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewEvent.StartTime" class="form-label"></label>
+                <input asp-for="NewEvent.StartTime" type="datetime-local" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewEvent.EndTime" class="form-label"></label>
+                <input asp-for="NewEvent.EndTime" type="datetime-local" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewEvent.VenueId" class="form-label">Venue (Optional)</label>
+                <select asp-for="NewEvent.VenueId" class="form-control" asp-items="Model.AvailableVenues">
+                    <option value="">-- Select Venue --</option>
+                </select>
+            </div>
+            <!-- Optional: ChecklistId as hidden or dropdown -->
+            <input type="hidden" asp-for="NewEvent.ChecklistId" value="1" />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Create Event</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

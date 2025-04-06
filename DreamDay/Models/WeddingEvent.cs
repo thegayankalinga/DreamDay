@@ -21,8 +21,14 @@ public class WeddingEvent
     public Checklist? Checklist { get; set; }
     
     [ForeignKey("AppUser")] 
+    [MaxLength(450)] 
     public string? UserId { get; set; }
     public AppUser? User { get; set; } // To link to a specific couple 
     
-    public ICollection<WeddingEventVendor>? WeddingEventVendors { get; set; }
+    [ForeignKey("Venue")]
+    public int? VenueId { get; set; }
+    public Venue? Venue { get; set; }
+    
+    public ICollection<WeddingEventVendor> WeddingEventVendors { get; set; } = new List<WeddingEventVendor>();
+
 }

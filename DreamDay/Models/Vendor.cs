@@ -16,6 +16,7 @@ public class Vendor
     
     [MaxLength(15)]
     public string? ContactInfo { get; set; }
+    
+    public ICollection<WeddingEventVendor> WeddingEventVendors { get; set; } = new List<WeddingEventVendor>();
 
-    public ICollection<WeddingEventVendor>? WeddingEventVendors { get; set; }
 }

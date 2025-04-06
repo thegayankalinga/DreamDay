@@ -79,5 +79,10 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     public DbSet<Guest> Guests { get; set; }
     public DbSet<Expense> Expenses { get; set; }
     public DbSet<BudgetCategory> BudgetCategories { get; set; }
+    public DbSet<WeddingEvent> WeddingEvents { get; set; }
+    public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<Venue> Venues { get; set; }
+    public DbSet<WeddingEventVendor> WeddingEventVendors { get; set; }
+    
 
 }
