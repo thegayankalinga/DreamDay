@@ -51,7 +51,10 @@ namespace DreamDay.Controllers
         
         var categories = await _budgetRepository.GetAllCategoriesByUserIdAsync(currentUser.Id);
         
-
+        var top3Categories = categories
+            .OrderByDescending(c => c.AllocatedAmount)
+            .Take(3)
+            .ToList();
 
         var coupleDashboardViewModel = new CoupleDashboardViewModel
         {
@@ -64,6 +67,12 @@ namespace DreamDay.Controllers
                 Value = c.Id.ToString(),
                 Text = c.Name
             }).ToList(),
+            BudgetSummary = new BudgetSummaryViewModel
+            {
+                TotalAllocated = currentUser.TotalAllocated,
+                TotalSpent = currentUser.TotalUtilized,
+                Top3Categories = top3Categories
+            }
             
         };
         

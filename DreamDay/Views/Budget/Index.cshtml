@@ -1,0 +1,140 @@
+﻿@model DreamDay.ViewModels.BudgetViewModel
+@{
+    ViewData["Title"] = "Budget Overview";
+    Layout = "_Dashboard";
+}
+
+<main class="container mt-4">
+    <h2>💰 Budget Overview</h2>
+
+    <!-- Summary -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Allocated</h5>
+                    <h3 class="text-success">@Model.TotalAllocated.ToString()</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Utilized</h5>
+                    <h3 class="text-info">@Model.TotalUtilized.ToString()</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Budget Category -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">➕ Add Budget Category</h5>
+            <form asp-action="AddCategory" asp-controller="Budget" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <input asp-for="NewCategory.Name" class="form-control" placeholder="Category Name" />
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="NewCategory.AllocatedAmount" class="form-control" placeholder="Allocated Amount" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Expense -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">➕ Add Expense</h5>
+            @if (!Model.Categories.Any())
+            {
+                <div class="alert alert-warning">
+                    No budget categories available. Please add one first.
+                </div>
+            }
+            else
+            {
+                <form asp-action="AddExpense"  asp-controller="Budget" method="post" class="row g-3">
+                    <div class="col-md-4">
+                        <select asp-for="NewExpense.BudgetCategoryId" asp-items="Model.CategoryList" class="form-select"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <input asp-for="NewExpense.Description" class="form-control" placeholder="Description" />
+                    </div>
+                    <div class="col-md-2">
+                        <input asp-for="NewExpense.Amount" class="form-control" placeholder="Amount" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">Add</button>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+
+    <!-- Category Cards -->
+    <h4 class="mb-3">📋 Categories</h4>
+    <div class="row">
+        @foreach (var cat in Model.Categories)
+        {
+            var utilization = cat.TotalSpent / cat.AllocatedAmount * 100;
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@cat.Name</h5>
+                        <p class="mb-1">Allocated: @cat.AllocatedAmount.ToString("C")</p>
+                        <p class="mb-1">Spent: @cat.TotalSpent.ToString("C")</p>
+
+                        <div class="progress mb-3">
+                            <div class="progress-bar @((utilization > 100) ? "bg-danger" : "bg-success")"
+                                 style="width: @utilization%" role="progressbar"
+                                 aria-valuenow="@utilization" aria-valuemin="0" aria-valuemax="100">
+                                @utilization.ToString("0")%
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="EditCategory" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a asp-action="ViewTransactions" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-secondary">Transactions</a>
+                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addExpenseModal-@cat.Id">Add Expense</button>
+                            <a asp-action="DeleteCategory" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Expense Modal for Category -->
+            <div class="modal fade" id="addExpenseModal-@cat.Id" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form asp-action="AddExpenseToCategory" method="post" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Expense to @cat.Name</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="BudgetCategoryId" value="@cat.Id" />
+                            <div class="mb-3">
+                                <label>Description</label>
+                                <input name="Description" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Amount</label>
+                                <input name="Amount" type="number" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Date</label>
+                                <input name="Date" type="date" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</main>

@@ -85,7 +85,7 @@
                                 <h4 class="card-title mb-2">
                                     <i class="bi bi-wallet2 me-2"></i>💰 Budget Overview
                                 </h4>
-                                <a asp-page="/Budget/Index" class="btn btn-sm btn-primary">
+                                <a asp-controller="Budget" asp-action="Index" class="btn btn-sm btn-primary">
                                     <i class="bi bi-bar-chart-fill me-1"></i> View Details
                                 </a>
                             </div>
@@ -109,13 +109,13 @@
             <div class="card my-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">💰 Budget Overview</h5>
-                    <a asp-page="/Budget/Index" class="btn btn-outline-primary btn-sm">Go to Budget Page</a>
+                    <a asp-controller="Budget" asp-action="Index" class="btn btn-outline-primary btn-sm">Go to Budget Page</a>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-4">
                             <h6>Total Allocated</h6>
-                            <h4>@Model.BudgetSummary.TotalAllocated.ToString("C")</h4>
+                            <h4>@Model.BudgetSummary.TotalAllocated.ToString()</h4>
                         </div>
                         <div class="col-md-4">
                             <h6>Total Utilized</h6>
@@ -192,7 +192,7 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between">
-                                    <a asp-page="/Budget/Index" class="btn btn-primary">Go to Budget Page</a>
+                                    <a asp-action="Index" asp-controller="Budget" class="btn btn-primary">Go to Budget Page</a>
                                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             }
