@@ -473,20 +473,20 @@ namespace DreamDay.Controllers
         return View(viewModel);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> RequestPlanner(string plannerId, string message)
-    {
-        var currentUser = _userProfileRepository.CurrentUser;
-        if (currentUser == null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-    
-        await _userRepository.RequestPlannerAsync(currentUser.Id, plannerId, message);
-    
-        TempData["Success"] = "Planner request sent successfully!";
-        return RedirectToAction("Index");
-    }
+    // [HttpPost]
+    // public async Task<IActionResult> RequestPlanner(string plannerId, string message)
+    // {
+    //     var currentUser = _userProfileRepository.CurrentUser;
+    //     if (currentUser == null)
+    //     {
+    //         return RedirectToAction("Index", "Home");
+    //     }
+    //
+    //     await _userRepository.RequestPlannerAsync(currentUser.Id, plannerId, message);
+    //
+    //     TempData["Success"] = "Planner request sent successfully!";
+    //     return RedirectToAction("Index");
+    // }
     
     [HttpPost]
     public async Task<IActionResult> CancelPlannerRequest(int requestId)
