@@ -1,0 +1,59 @@
+﻿@model DreamDay.ViewModels.Messages.MessageListViewModel
+
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Messages</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Messages</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-envelope me-1"></i>
+                My Messages
+                @if (Model.UnreadCount > 0)
+                {
+                    <span class="badge bg-danger ms-2">@Model.UnreadCount unread</span>
+                }
+            </div>
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i> New Message
+            </a>
+        </div>
+        <div class="card-body">
+            @if (!Model.Threads.Any())
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">You don't have any messages yet. Start a conversation by clicking "New Message".</p>
+                </div>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var thread in Model.Threads)
+                    {
+                        <a asp-action="Thread" asp-route-id="@thread.Id" class="list-group-item list-group-item-action @(thread.HasUnreadMessages ? "fw-bold" : "")">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">@thread.Subject</h5>
+                                <small>@thread.LatestMessageDate.ToString("MMM dd, yyyy h:mm tt")</small>
+                            </div>
+                            <p class="mb-1 text-truncate">@thread.LatestMessageContent</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small>With: @thread.OtherPersonName (@thread.OtherPersonRole)</small>
+                                @if (thread.HasUnreadMessages)
+                                {
+                                    <span class="badge bg-primary">New</span>
+                                }
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

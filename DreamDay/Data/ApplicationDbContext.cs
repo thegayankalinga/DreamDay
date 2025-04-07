@@ -66,6 +66,32 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
             .WithOne(cp => cp.Planner)
             .HasForeignKey(cp => cp.PlannerId)
             .OnDelete(DeleteBehavior.Restrict); // Avoid multiple cascade paths
+        
+        // Configure the MessageThread entity
+        modelBuilder.Entity<MessageThread>()
+            .HasOne(t => t.Creator)
+            .WithMany()
+            .HasForeignKey(t => t.CreatorId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<MessageThread>()
+            .HasOne(t => t.Recipient)
+            .WithMany()
+            .HasForeignKey(t => t.RecipientId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        // Configure the Message entity
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.Sender)
+            .WithMany()
+            .HasForeignKey(m => m.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.Thread)
+            .WithMany(t => t.Messages)
+            .HasForeignKey(m => m.MessageThreadId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     
@@ -83,6 +109,8 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     public DbSet<Vendor> Vendors { get; set; }
     public DbSet<Venue> Venues { get; set; }
     public DbSet<WeddingEventVendor> WeddingEventVendors { get; set; }
+    public DbSet<MessageThread> MessageThreads { get; set; }
+    public DbSet<Message> Messages { get; set; }
     
 
 }

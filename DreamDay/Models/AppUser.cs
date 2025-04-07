@@ -8,14 +8,14 @@ public class AppUser: IdentityUser
 {
     [MaxLength(100)]
     public required string FirstName { get; set; }
-    
     [MaxLength(100)]
     public string? LastName { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     //One to one couple profile
     public CoupleProfile? CoupleProfile { get; set; }
     
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+   
     
     //one to one planner profile
     public PlannerProfile? PlannerProfile { get; set; }
@@ -24,7 +24,7 @@ public class AppUser: IdentityUser
     public ICollection<Guest>? AssignedGuests { get; set; } //if he is a couple
     public ICollection<BudgetCategory>? AssignedBudgetCategories { get; set; } // if he is a couple
 
-
+    #region NotMapped
     [NotMapped] 
     public decimal? TotalAllocated => AssignedBudgetCategories?.Sum(category => category.AllocatedAmount) ?? 0;
     [NotMapped]
@@ -32,7 +32,7 @@ public class AppUser: IdentityUser
         AssignedBudgetCategories?.Sum(category =>
             category.Expenses?.Sum(ex => ex.Amount) ?? 0
         ) ?? 0;
-
+    #endregion
 
 
 }   

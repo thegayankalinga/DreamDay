@@ -14,4 +14,5 @@ public class Venue
     public string? Address { get; set; }
     
     public ICollection<WeddingEvent>? WeddingEvents { get; set; } 
+    public List<CoupleProfile>? CoupleProfiles { get; set; }
 }

@@ -112,10 +112,41 @@
                                     </a>
                                 </nav>
                             </div>
-                            
+                            <!-- This code shows how to integrate the UnreadMessageCount view component into your navigation -->
+
+                            <!-- For Couple Navigation Section -->
+                            @if (User.IsInRole(UserRoles.Couple))
+                            {
+                                <div class="sb-sidenav-menu-heading">Communication</div>
+                                <a class="nav-link d-flex justify-content-between align-items-center" asp-controller="Message" asp-action="Index">
+                                    <div>
+                                        <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
+                                        Messages
+                                    </div>
+                                    @await Component.InvokeAsync("UnreadMessageCount")
+                                </a>
+    
+                                <!-- Other couple navigation items -->
+                            }
+
                             
                         }else if (User.IsInRole(UserRoles.Planner))
                         {
+                            
+                            <!-- For Planner Navigation Section -->
+                            @if (User.IsInRole(UserRoles.Planner))
+                            {
+                                <div class="sb-sidenav-menu-heading">Communication</div>
+                                <a class="nav-link d-flex justify-content-between align-items-center" asp-controller="Message" asp-action="Index">
+                                    <div>
+                                        <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
+                                        Messages
+                                    </div>
+                                    @await Component.InvokeAsync("UnreadMessageCount")
+                                </a>
+    
+                                <!-- Other planner navigation items -->
+                            }
                             <div class="sb-sidenav-menu-heading">Planner</div> 
                             <!-- Weddings -->
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWeddings" aria-expanded="false" aria-controls="collapseChecklists">
@@ -147,6 +178,9 @@
                                     </a>
                                 </nav>
                             </div>
+                            
+                           
+
                             
                             <!-- Venue -->
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVenue" aria-expanded="false" aria-controls="collapseChecklists">
