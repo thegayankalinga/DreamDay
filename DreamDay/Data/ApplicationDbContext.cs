@@ -111,6 +111,8 @@ public class ApplicationDbContext: IdentityDbContext<AppUser> //to be used with 
     public DbSet<WeddingEventVendor> WeddingEventVendors { get; set; }
     public DbSet<MessageThread> MessageThreads { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<PlannerRequest> PlannerRequests { get; set; }
+
     
 
 }

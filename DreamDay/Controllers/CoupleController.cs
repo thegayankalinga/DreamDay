@@ -1,6 +1,8 @@
-﻿using DreamDay.Interfaces;
+﻿using DreamDay.Data.Enums;
+using DreamDay.Interfaces;
 using DreamDay.Models;
 using DreamDay.ViewModels;
+using DreamDay.ViewModels.Couple;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,13 +19,15 @@ namespace DreamDay.Controllers
         private readonly IGuestRepository _guestRepository;
         private readonly IBudgetRepository _budgetRepository;
         private readonly IWeddingEventRepository _weddingRepository;
+        private readonly IUserRepository _userRepository;
 
     public CoupleController(
         IUserProfileRepository userProfileRepository, 
         IChecklistRepository checklistRepository, 
         IItemRepository itemRepository,
         IGuestRepository guestRepository, 
-        IBudgetRepository budgetRepository, IWeddingEventRepository weddingRepository)
+        IBudgetRepository budgetRepository, IWeddingEventRepository weddingRepository,
+        IUserRepository userRepository)
     {
         _userProfileRepository = userProfileRepository;
         _checklistRepository = checklistRepository;
@@ -31,6 +35,7 @@ namespace DreamDay.Controllers
         _guestRepository = guestRepository;
         _budgetRepository = budgetRepository;
         _weddingRepository = weddingRepository;
+        _userRepository = userRepository;
     }
     
     [Authorize(Policy = "RequireCoupleRole")]
@@ -94,11 +99,126 @@ namespace DreamDay.Controllers
             
         };
         
+        if (coupleProfile != null)
+        {
+            // Load planner requests
+            var plannerRequests = await _userRepository.GetCoupleRequestsAsync(coupleProfile.Id);
+            
+            if (plannerRequests != null)
+            {
+                foreach (var request in plannerRequests)
+                {
+                    if (request?.Planner == null)
+                        continue;
+            
+                    coupleDashboardViewModel.PlannerRequests.Add(new PlannerRequestViewModel
+                    {
+                        RequestId = request.Id,
+                        PlannerId = request.PlannerId,
+                        PlannerName = $"{request.Planner.FirstName} {request.Planner.LastName}",
+                        RequestDate = request.RequestDate,
+                        Status = request.Status
+                    });
+                }
+            }
+    
+            // Check for accepted planner
+            if (coupleProfile.AcceptedPlannerId != null)
+            {
+                var planner = await _userRepository.GetByIdAsync(coupleProfile.AcceptedPlannerId);
+                if (planner != null)
+                {
+                    coupleDashboardViewModel.AcceptedPlannerName = $"{planner.FirstName} {planner.LastName}";
+                }
+            }
+        }
+        
+        
+        
+        if (coupleProfile.PlannerId != null)
+        {
+            var planner = await _userRepository.GetByIdAsync(coupleProfile.PlannerId);
+            if (planner != null)
+            {
+                coupleDashboardViewModel.PlannerName = $"{planner.FirstName} {planner.LastName}";
+                coupleDashboardViewModel.PlannerRequestStatus = coupleProfile.PlannerRequestStatus;
+            }
+        }
+        
         return View(coupleDashboardViewModel);
         
     }
 
-   
+    
+    [HttpGet]
+    public async Task<IActionResult> SelectPlanner()
+    {
+        var currentUser = _userProfileRepository.CurrentUser;
+        if (currentUser == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Get all approved planners
+        var allUsers = await _userRepository.GetAllAsync();
+        var planners = allUsers
+            .Where(u => u.PlannerProfile != null && u.PlannerProfile.IsApproved)
+            .ToList();
+    
+        // Get the couple's existing planner requests
+        var coupleProfile = _userProfileRepository.CoupleProfile;
+        var existingRequests = new List<string>();
+    
+        if (coupleProfile != null)
+        {
+            var plannerRequests = await _userRepository.GetCoupleRequestsAsync(coupleProfile.Id);
+            if (plannerRequests != null)
+            {
+                existingRequests = plannerRequests
+                    .Where(r => r.Status == PlannerRequestStatus.Requested || r.Status == PlannerRequestStatus.Accepted)
+                    .Select(r => r.PlannerId)
+                    .ToList();
+            }
+        }
+    
+        var viewModel = new AvailablePlannerViewModel
+        {
+            Planners = planners.Select(p => new PlannerViewModel
+            {
+                Id = p.Id,
+                Name = $"{p.FirstName} {p.LastName}",
+                Email = p.Email,
+                PhoneNumber = p.PhoneNumber,
+                IsApproved = p.PlannerProfile.IsApproved,
+                IsRequested = existingRequests.Contains(p.Id) || 
+                              (coupleProfile?.PlannerId == p.Id && coupleProfile?.PlannerRequestStatus != PlannerRequestStatus.None)
+            }).ToList()
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RequestPlanner(string plannerId)
+    {
+        var currentUser = _userProfileRepository.CurrentUser;
+        var coupleProfile = _userProfileRepository.CoupleProfile;
+    
+        if (currentUser == null || coupleProfile == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+    
+        // Update the couple's planner and status
+        coupleProfile.PlannerId = plannerId;
+        coupleProfile.PlannerRequestStatus = PlannerRequestStatus.Requested;
+    
+        // Save changes
+        await _userRepository.UpdateAsync(currentUser, currentUser.Id);
+    
+        TempData["Success"] = "Planner request sent successfully!";
+        return RedirectToAction("Index");
+    }
 
     #region Checklists
 
@@ -330,6 +450,49 @@ namespace DreamDay.Controllers
 
         TempData["Success"] = "Expense added successfully!";
         return RedirectToAction("Index"); // or "Dashboard" if you're redirecting there
+    }
+    
+    
+    [HttpGet]
+    public async Task<IActionResult> AvailablePlanners()
+    {
+        var availablePlanners = await _userRepository.GetAllAvailablePlannersAsync();
+    
+        var viewModel = new AvailablePlannerViewModel()
+        {
+            Planners = availablePlanners.Select(p => new PlannerViewModel
+            {
+                Id = p.Id,
+                Name = $"{p.FirstName} {p.LastName}",
+                Email = p.Email,
+                PhoneNumber = p.PhoneNumber,
+                IsApproved = p.PlannerProfile.IsApproved
+            }).ToList()
+        };
+    
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RequestPlanner(string plannerId, string message)
+    {
+        var currentUser = _userProfileRepository.CurrentUser;
+        if (currentUser == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+    
+        await _userRepository.RequestPlannerAsync(currentUser.Id, plannerId, message);
+    
+        TempData["Success"] = "Planner request sent successfully!";
+        return RedirectToAction("Index");
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CancelPlannerRequest(int requestId)
+    {
+        await _userRepository.CancelPlannerRequestAsync(requestId);
+        return RedirectToAction("Index");
     }
    
     // [HttpGet]

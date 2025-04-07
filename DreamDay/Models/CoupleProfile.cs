@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DreamDay.Data.Enums;
 
 namespace DreamDay.Models;
 
@@ -25,6 +26,14 @@ public class CoupleProfile
     [MaxLength(450)]
     public string? PlannerId { get; set; }     // Points to the assigned planner
     public AppUser? Planner { get; set; }      // Also an AppUser, with Planner role
+    
+    public ICollection<PlannerRequest> PlannerRequests { get; set; } = new List<PlannerRequest>();
+    public PlannerRequestStatus PlannerRequestStatus { get; set; } = PlannerRequestStatus.None;
+// This property will point to the accepted planner (if any)
+    [ForeignKey("AcceptedPlanner")]
+    [MaxLength(450)]
+    public string? AcceptedPlannerId { get; set; }
+    public AppUser? AcceptedPlanner { get; set; }
     
     public ICollection<Checklist>? WeddingChecklists { get; set; }
     public List<Guest>? Guests { get; set; }

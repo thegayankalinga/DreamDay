@@ -53,6 +53,12 @@
                         @if (User.IsInRole(UserRoles.Couple))
                         {
                             <div class="sb-sidenav-menu-heading">Couple</div> 
+                            
+                            <a class="nav-link" asp-controller="Couple" asp-action="AvailablePlanners">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+                                Find a Planner
+                            </a>
+                            
                             <!-- Checklists -->
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseChecklists" aria-expanded="false" aria-controls="collapseChecklists">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
@@ -120,13 +126,18 @@
                                 <div class="sb-sidenav-menu-heading">Communication</div>
                                 <a class="nav-link d-flex justify-content-between align-items-center" asp-controller="Message" asp-action="Index">
                                     <div>
-                                        <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
-                                        Messages
+                                        <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i>
+                                            Messages
+                                        </div>
                                     </div>
                                     @await Component.InvokeAsync("UnreadMessageCount")
                                 </a>
     
                                 <!-- Other couple navigation items -->
+                                <a class="nav-link" asp-controller="Couple" asp-action="SelectPlanner">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+                                    Find a Planner
+                                </a>
                             }
 
                             

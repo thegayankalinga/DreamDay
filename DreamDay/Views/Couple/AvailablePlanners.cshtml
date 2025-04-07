@@ -1,0 +1,118 @@
+﻿// Views/Couple/AvailablePlanners.cshtml
+@model DreamDay.ViewModels.Couple.AvailablePlannerViewModel
+
+@{
+    ViewData["Title"] = "Available Wedding Planners";
+    Layout = "_Dashboard";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Available Wedding Planners</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Available Planners</li>
+    </ol>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-tie me-1"></i>
+            Wedding Planners
+        </div>
+        <div class="card-body">
+            @if (Model.Planners.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="plannersTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var planner in Model.Planners)
+                            {
+                                <tr>
+                                    <td>@planner.Name</td>
+                                    <td>@planner.Email</td>
+                                    <td>@planner.PhoneNumber</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#requestModal" 
+                                                data-planner-id="@planner.Id" 
+                                                data-planner-name="@planner.Name">
+                                            Request
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No wedding planners are available at the moment.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Request Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="RequestPlanner" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestModalLabel">Request Planner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="plannerId" name="plannerId" />
+                    <p>Send a request to <span id="plannerName"></span> to be your wedding planner.</p>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message (Optional)</label>
+                        <textarea class="form-control" id="message" name="message" rows="3" 
+                                  placeholder="Add a personal message to the planner"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#plannersTable').DataTable();
+            
+            // Set planner details in modal
+            $('#requestModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var plannerId = button.data('planner-id');
+                var plannerName = button.data('planner-name');
+                
+                var modal = $(this);
+                modal.find('#plannerId').val(plannerId);
+                modal.find('#plannerName').text(plannerName);
+            });
+        });
+    </script>
+}

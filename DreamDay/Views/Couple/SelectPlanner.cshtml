@@ -1,0 +1,65 @@
+﻿<!-- Views/Couple/SelectPlanner.cshtml -->
+@model DreamDay.ViewModels.Couple.AvailablePlannerViewModel
+
+@{
+    ViewData["Title"] = "Select Planner";
+    Layout = "_Dashboard";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Select a Wedding Planner</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Select Planner</li>
+    </ol>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-tie me-1"></i>
+            Available Wedding Planners
+        </div>
+        <div class="card-body">
+            @if (Model.Planners.Any())
+            {
+                <div class="row">
+                    @foreach (var planner in Model.Planners)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@planner.Name</h5>
+                                    <p class="card-text">@planner.Email</p>
+                                    <p class="card-text">@planner.PhoneNumber</p>
+                                    <form asp-action="RequestPlanner" method="post">
+                                        <input type="hidden" name="plannerId" value="@planner.Id" />
+                                        @if (planner.IsRequested)
+                                        {
+                                            <button type="button" class="btn btn-secondary" disabled>Request Already Sent</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-primary">Request This Planner</button>
+                                        }
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No approved wedding planners are available at the moment.
+                </div>
+            }
+        </div>
+    </div>
+</div>

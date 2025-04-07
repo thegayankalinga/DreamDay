@@ -1,4 +1,5 @@
-﻿@model DreamDay.ViewModels.CoupleDashboardViewModel
+﻿@using DreamDay.Data.Enums
+@model DreamDay.ViewModels.CoupleDashboardViewModel
 @* @model Guest *@
 
 @{
@@ -9,7 +10,39 @@
 <main class="container mt-4">
     <h1 class="mb-1">Welcome, @Model.FullCoupleName!</h1>
     <p class="text-muted">Wedding Date: @Model.WeddingDate.ToString("MMMM dd, yyyy")</p>
-
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-tie me-1"></i>
+            Wedding Planner
+        </div>
+        <div class="card-body">
+            @if (Model.PlannerRequestStatus == PlannerRequestStatus.None)
+            {
+                <p>You haven't selected a wedding planner yet.</p>
+                @* <a asp-action="SelectPlanner" class="btn btn-primary">Find a Planner</a> *@
+                <a asp-action="AvailablePlanners" class="btn btn-primary">Find a Planner</a>
+            }
+            else if (Model.PlannerRequestStatus == PlannerRequestStatus.Requested)
+            {
+                <div class="alert alert-info">
+                    <p>Your request to <strong>@Model.PlannerName</strong> is pending.</p>
+                </div>
+            }
+            else if (Model.PlannerRequestStatus == PlannerRequestStatus.Accepted)
+            {
+                <div class="alert alert-success">
+                    <p>Your wedding planner: <strong>@Model.PlannerName</strong></p>
+                </div>
+            }
+            else if (Model.PlannerRequestStatus == PlannerRequestStatus.Declined)
+            {
+                <div class="alert alert-warning">
+                    <p>Your request to <strong>@Model.PlannerName</strong> was declined.</p>
+                    <a asp-action="SelectPlanner" class="btn btn-primary">Find Another Planner</a>
+                </div>
+            }
+        </div>
+    </div>
     <div class="row mt-4">
         <!-- ✅ Customizable Wedding Checklist -->
         <div class="col-md-6 mb-4">

@@ -11,4 +11,10 @@ public interface IUserRepository
     Task<bool?> GetPlannerActivationStatusAsync(string userId);
 
     Task<bool> DeleteAsync(string id);
+    
+    Task<List<AppUser>> GetAllAvailablePlannersAsync();
+    Task<bool> RequestPlannerAsync(string coupleId, string plannerId, string message);
+
+    Task<List<PlannerRequest>> GetCoupleRequestsAsync(int coupleProfileId);
+    Task<bool> CancelPlannerRequestAsync(int requestId);
 }

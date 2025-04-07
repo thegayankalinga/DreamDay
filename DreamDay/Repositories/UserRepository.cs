@@ -1,4 +1,5 @@
 ﻿using DreamDay.Data;
+using DreamDay.Data.Enums;
 using DreamDay.Interfaces;
 using DreamDay.Models;
 using Microsoft.EntityFrameworkCore;
@@ -75,4 +76,82 @@ public class UserRepository: IUserRepository
 
         return planner?.IsApproved;
     } 
+    
+    public async Task<List<AppUser>> GetAllAvailablePlannersAsync()
+    {
+        return await _context.Users
+            .Include(u => u.PlannerProfile)
+            .Where(u => u.PlannerProfile != null && u.PlannerProfile.IsApproved)
+            .ToListAsync();
+    }
+
+    public async Task<bool> RequestPlannerAsync(string coupleId, string plannerId, string message)
+    {
+        var couple = await _context.Users
+            .Include(u => u.CoupleProfile)
+            .FirstOrDefaultAsync(u => u.Id == coupleId);
+        
+        if (couple?.CoupleProfile == null)
+            return false;
+    
+        // Check if a request already exists for this planner
+        var existingRequest = await _context.Set<PlannerRequest>()
+            .FirstOrDefaultAsync(pr => pr.CoupleProfileId == couple.CoupleProfile.Id && 
+                                       pr.PlannerId == plannerId);
+    
+        if (existingRequest != null)
+        {
+            // If the request was declined, we can reactivate it
+            if (existingRequest.Status == PlannerRequestStatus.Declined)
+            {
+                existingRequest.Status = PlannerRequestStatus.Requested;
+                existingRequest.RequestDate = DateTime.Now;
+                existingRequest.Message = message;
+            }
+            // Otherwise, don't create a duplicate request
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // Create a new request
+            var request = new PlannerRequest
+            {
+                CoupleProfileId = couple.CoupleProfile.Id,
+                PlannerId = plannerId,
+                Message = message,
+                RequestDate = DateTime.Now,
+                Status = PlannerRequestStatus.Requested
+            };
+        
+            _context.Add(request);
+        }
+    
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    
+    
+    public async Task<List<PlannerRequest>> GetCoupleRequestsAsync(int coupleProfileId)
+    {
+        return await _context.Set<PlannerRequest>()
+            .Include(pr => pr.Planner)
+            .Where(pr => pr.CoupleProfileId == coupleProfileId)
+            .ToListAsync();
+    }
+    
+    public async Task<bool> CancelPlannerRequestAsync(int requestId)
+    {
+        var request = await _context.Set<PlannerRequest>().FindAsync(requestId);
+        if (request == null)
+            return false;
+        
+        _context.Remove(request);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    
+   
 }

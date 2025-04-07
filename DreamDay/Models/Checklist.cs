@@ -18,4 +18,6 @@ public class Checklist
     public DateTime CreatedDate { get; init; } = DateTime.Now;
     
     public ICollection<ChecklistItem>? Items { get; set; }
+
+    public bool AllowedEditToPlanner { get; set; } = true;
 }
