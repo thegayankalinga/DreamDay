@@ -1,12 +1,12 @@
-﻿@{
+@{
     ViewData["Title"] = "Wedding Planning Made Simple";
 }
 
 <div class="hero-section text-center py-5">
     <h1 class="display-4 mb-4">Your Perfect Day Begins Here</h1>
     <p class="lead mb-5">Planning your dream wedding has never been easier. Let us help you create memories that last a lifetime.</p>
-    
-    @if (User.Identity is { IsAuthenticated: false })
+
+    @if (!User.Identity.IsAuthenticated)
     {
         <div class="d-flex justify-content-center gap-3 mb-4">
             <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
@@ -143,7 +143,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
         // Add any JavaScript for the homepage here
