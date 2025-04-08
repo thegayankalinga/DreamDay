@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ViewModels\Planner\" />
       <Folder Include="Views\Checklist\" />
     </ItemGroup>
 

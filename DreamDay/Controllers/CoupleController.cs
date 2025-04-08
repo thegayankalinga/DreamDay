@@ -199,26 +199,59 @@ namespace DreamDay.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> RequestPlanner(string plannerId)
+public async Task<IActionResult> RequestPlanner(string plannerId, string? message)
+{
+    var currentUser = _userProfileRepository.CurrentUser;
+    var coupleProfile = _userProfileRepository.CoupleProfile;
+
+    if (currentUser == null || coupleProfile == null)
     {
-        var currentUser = _userProfileRepository.CurrentUser;
-        var coupleProfile = _userProfileRepository.CoupleProfile;
-    
-        if (currentUser == null || coupleProfile == null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-    
-        // Update the couple's planner and status
-        coupleProfile.PlannerId = plannerId;
-        coupleProfile.PlannerRequestStatus = PlannerRequestStatus.Requested;
-    
-        // Save changes
-        await _userRepository.UpdateAsync(currentUser, currentUser.Id);
-    
-        TempData["Success"] = "Planner request sent successfully!";
-        return RedirectToAction("Index");
+        return Request.Headers["X-Requested-With"] == "XMLHttpRequest" 
+            ? Json(new { success = false, message = "User not found" }) 
+            : RedirectToAction("Login", "Account");
     }
+
+    // Check if a request already exists
+    if (coupleProfile.PlannerId == plannerId && coupleProfile.PlannerRequestStatus != PlannerRequestStatus.None)
+    {
+        // Request already exists
+        return Request.Headers["X-Requested-With"] == "XMLHttpRequest"
+            ? Json(new { success = false, message = "You have already requested this planner" })
+            : RedirectToAction("AvailablePlanners");
+    }
+
+    // Update the couple's planner and status
+    coupleProfile.PlannerId = plannerId;
+    coupleProfile.PlannerRequestStatus = PlannerRequestStatus.Requested;
+
+    // Save changes
+    await _userRepository.UpdateAsync(currentUser, currentUser.Id);
+
+    // Create planner request record if using the detailed PlannerRequest system
+    // This depends on how your system is set up - you might use either the direct coupleProfile.PlannerId approach
+    // or the PlannerRequest entity approach, or both
+    var planner = await _userRepository.GetByIdAsync(plannerId);
+    if (planner != null)
+    {
+        var plannerRequest = new PlannerRequest
+        {
+            CoupleProfileId = coupleProfile.Id,
+            PlannerId = plannerId,
+            Message = message,
+            RequestDate = DateTime.Now,
+            Status = PlannerRequestStatus.Requested
+        };
+        
+        // Save the request - assuming _userRepository has a method for this
+        // await _userRepository.AddPlannerRequestAsync(plannerRequest);
+    }
+
+    TempData["Success"] = "Planner request sent successfully!";
+    
+    return Request.Headers["X-Requested-With"] == "XMLHttpRequest"
+        ? Json(new { success = true })
+        : RedirectToAction("Index");
+}
 
     #region Checklists
 
@@ -456,9 +489,34 @@ namespace DreamDay.Controllers
     [HttpGet]
     public async Task<IActionResult> AvailablePlanners()
     {
+        var currentUser = _userProfileRepository.CurrentUser;
+        if (currentUser == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        // Get all approved planners
         var availablePlanners = await _userRepository.GetAllAvailablePlannersAsync();
     
-        var viewModel = new AvailablePlannerViewModel()
+        // Get the couple's existing planner requests
+        var coupleProfile = _userProfileRepository.CoupleProfile;
+        var existingRequests = new List<string?>();
+    
+        if (coupleProfile != null)
+        {
+            var plannerRequests = await _userRepository.GetCoupleRequestsAsync(coupleProfile.Id);
+            
+            
+            if (plannerRequests.Count > 0)
+            {
+                existingRequests = plannerRequests
+                    .Where(r => r.Status == PlannerRequestStatus.Requested || r.Status == PlannerRequestStatus.Accepted)
+                    .Select(r => r.PlannerId)
+                    .ToList();
+            }
+        }
+        
+        var viewModel = new AvailablePlannerViewModel
         {
             Planners = availablePlanners.Select(p => new PlannerViewModel
             {
@@ -466,27 +524,14 @@ namespace DreamDay.Controllers
                 Name = $"{p.FirstName} {p.LastName}",
                 Email = p.Email,
                 PhoneNumber = p.PhoneNumber,
-                IsApproved = p.PlannerProfile.IsApproved
+                IsApproved = p.PlannerProfile is { IsApproved: true },
+                IsRequested = existingRequests.Contains(p.Id) || 
+                              (coupleProfile?.PlannerId == p.Id && coupleProfile?.PlannerRequestStatus != PlannerRequestStatus.None)
             }).ToList()
         };
-    
+
         return View(viewModel);
     }
-
-    // [HttpPost]
-    // public async Task<IActionResult> RequestPlanner(string plannerId, string message)
-    // {
-    //     var currentUser = _userProfileRepository.CurrentUser;
-    //     if (currentUser == null)
-    //     {
-    //         return RedirectToAction("Index", "Home");
-    //     }
-    //
-    //     await _userRepository.RequestPlannerAsync(currentUser.Id, plannerId, message);
-    //
-    //     TempData["Success"] = "Planner request sent successfully!";
-    //     return RedirectToAction("Index");
-    // }
     
     [HttpPost]
     public async Task<IActionResult> CancelPlannerRequest(int requestId)

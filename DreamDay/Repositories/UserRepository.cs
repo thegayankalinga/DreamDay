@@ -38,6 +38,9 @@ public class UserRepository: IUserRepository
             existingUser.UserName = user.UserName;
             existingUser.PhoneNumber = user.PhoneNumber;
             
+           
+            
+            
             await _context.SaveChangesAsync();
             return true;
         }
@@ -140,6 +143,7 @@ public class UserRepository: IUserRepository
             .Include(pr => pr.Planner)
             .Where(pr => pr.CoupleProfileId == coupleProfileId)
             .ToListAsync();
+        
     }
     
     public async Task<bool> CancelPlannerRequestAsync(int requestId)

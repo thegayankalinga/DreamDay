@@ -1,0 +1,103 @@
+﻿@model DreamDay.ViewModels.Planner.PlannerWeddingCardViewModel
+
+<div class="card mb-4 wedding-card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">@Model.CoupleName</h5>
+        <span class="badge bg-@GetStatusBadgeColor(Model.Status)">@Model.Status</span>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-2">
+                    <i class="far fa-calendar-alt me-2"></i>
+                    <strong>Wedding Date:</strong> @Model.WeddingDate.ToString("MMMM dd, yyyy")
+                </p>
+                <p class="mb-2">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    <strong>Venue:</strong> @(string.IsNullOrEmpty(Model.VenueName) ? "Not set" : Model.VenueName)
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-2">
+                    <i class="fas fa-tasks me-2"></i>
+                    <strong>Checklist:</strong> 
+                    <span class="ms-2">
+                        @Model.CompletedChecklistItems / @Model.TotalChecklistItems tasks
+                    </span>
+                </p>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: @GetProgressPercentage(Model.CompletedChecklistItems, Model.TotalChecklistItems)%;" 
+                         aria-valuenow="@GetProgressPercentage(Model.CompletedChecklistItems, Model.TotalChecklistItems)" 
+                         aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p class="mb-2">
+                    <i class="fas fa-dollar-sign me-2"></i>
+                    <strong>Budget:</strong> 
+                    <span class="ms-2">
+                        @Model.BudgetUtilized.ToString("C0") of @Model.Budget.ToString("C0") (@GetBudgetPercentage(Model.BudgetUtilized, Model.Budget)%)
+                    </span>
+                </p>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar @(GetBudgetPercentage(Model.BudgetUtilized, Model.Budget) > 100 ? "bg-danger" : "")" 
+                         role="progressbar" 
+                         style="width: @Math.Min(GetBudgetPercentage(Model.BudgetUtilized, Model.Budget), 100)%;" 
+                         aria-valuenow="@GetBudgetPercentage(Model.BudgetUtilized, Model.Budget)" 
+                         aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 d-flex justify-content-end">
+            <a asp-controller="Messages" asp-action="Create" asp-route-recipientId="@Model.CoupleProfileId" class="btn btn-outline-primary btn-sm me-2">
+                <i class="fas fa-envelope me-1"></i> Message
+                @if (Model.UnreadMessageCount > 0)
+                {
+                    <span class="badge bg-danger ms-1">@Model.UnreadMessageCount</span>
+                }
+            </a>
+            <a asp-controller="Planner" asp-action="ManageChecklists" asp-route-id="@Model.CoupleProfileId" class="btn btn-outline-primary btn-sm me-2">
+                <i class="fas fa-tasks me-1"></i> Checklists
+            </a>
+            <a asp-controller="Planner" asp-action="WeddingDetails" asp-route-id="@Model.CoupleProfileId" class="btn btn-primary btn-sm">
+                <i class="fas fa-info-circle me-1"></i> Details
+            </a>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public int GetProgressPercentage(int completed, int total)
+    {
+        if (total == 0) return 0;
+        return (int)((float)completed / total * 100);
+    }
+    
+    public int GetBudgetPercentage(decimal utilized, decimal total)
+    {
+        if (total == 0) return 0;
+        return (int)(utilized / total * 100);
+    }
+    
+    public string GetStatusBadgeColor(string status)
+    {
+        return status switch
+        {
+            "Completed" => "secondary",
+            "InProgress" => "warning",
+            "Upcoming" => "primary",
+            _ => "info"
+        };
+    }
+}
+
+<style>
+    .wedding-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .wedding-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+

@@ -1,5 +1,4 @@
-﻿// Views/Couple/AvailablePlanners.cshtml
-@model DreamDay.ViewModels.Couple.AvailablePlannerViewModel
+﻿@model DreamDay.ViewModels.Couple.AvailablePlannerViewModel
 
 @{
     ViewData["Title"] = "Available Wedding Planners";
@@ -46,13 +45,22 @@
                                     <td>@planner.Email</td>
                                     <td>@planner.PhoneNumber</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary btn-sm" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#requestModal" 
-                                                data-planner-id="@planner.Id" 
-                                                data-planner-name="@planner.Name">
-                                            Request
-                                        </button>
+                                        @if (planner.IsRequested)
+                                        {
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                                Requested
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-primary btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#requestModal" 
+                                                    data-planner-id="@planner.Id" 
+                                                    data-planner-name="@planner.Name">
+                                                Request
+                                            </button>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -74,13 +82,14 @@
 <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="RequestPlanner" method="post">
+            <form asp-action="RequestPlanner" asp-controller="Couple" method="post">
+                
                 <div class="modal-header">
                     <h5 class="modal-title" id="requestModalLabel">Request Planner</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="plannerId" name="plannerId" />
+                    <input type="text" id="plannerId" name="plannerId"/>
                     <p>Send a request to <span id="plannerName"></span> to be your wedding planner.</p>
                     <div class="mb-3">
                         <label for="message" class="form-label">Message (Optional)</label>
@@ -99,19 +108,74 @@
 
 @section Scripts {
     <script>
+       
+        
         $(document).ready(function () {
             // Initialize DataTable
             var table = $('#plannersTable').DataTable();
-            
+
             // Set planner details in modal
             $('#requestModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
                 var plannerId = button.data('planner-id');
                 var plannerName = button.data('planner-name');
-                
+
                 var modal = $(this);
                 modal.find('#plannerId').val(plannerId);
                 modal.find('#plannerName').text(plannerName);
+            });
+
+            // Handle form submission with AJAX
+            $('form').on('submit', function(e) {
+                e.preventDefault(); // Prevent normal form submission
+
+                var form = $(this);
+                var plannerId = $('#plannerId').val();
+                var message = $('#message').val();
+
+                // Submit the form via AJAX
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: { plannerId: plannerId, message: message },
+                    success: function(response) {
+                        // Close the modal
+                        $('#requestModal').modal('hide');
+
+                        // Update the UI: Find the button and disable it
+                        var button = $(`button[data-planner-id="${plannerId}"]`);
+                        button.removeClass('btn-primary').addClass('btn-secondary');
+                        button.prop('disabled', true);
+                        button.removeAttr('data-bs-toggle data-bs-target');
+                        button.text('Requested');
+
+                        // Show success message
+                        var successHtml = '<div class="alert alert-success">Planner request sent successfully!</div>';
+                        if ($('.alert-success').length) {
+                            $('.alert-success').html('Planner request sent successfully!');
+                        } else {
+                            $('.breadcrumb').after(successHtml);
+                        }
+
+                        // Scroll to the message
+                        $('html, body').animate({
+                            scrollTop: $('.alert-success').offset().top - 100
+                        }, 200);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#requestModal').modal('hide');
+
+                        // Show error message
+                        var errorHtml = '<div class="alert alert-danger">There was an error processing your request. Please try again.</div>';
+                        if ($('.alert-danger').length) {
+                            $('.alert-danger').html('There was an error processing your request. Please try again.');
+                        } else {
+                            $('.breadcrumb').after(errorHtml);
+                        }
+
+                        console.error('Error:', error);
+                    }
+                });
             });
         });
     </script>

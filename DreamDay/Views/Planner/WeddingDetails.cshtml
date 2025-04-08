@@ -1,0 +1,319 @@
+﻿@model DreamDay.ViewModels.Planner.WeddingDetailsViewModel
+@{
+    Layout = "_Dashboard";
+    ViewData["Title"] = "Wedding Details";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Wedding Details: @Model.CoupleName</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Planner" asp-action="Dashboard">Planner Dashboard</a></li>
+        <li class="breadcrumb-item active">Wedding Details</li>
+    </ol>
+
+    <div class="row">
+        <!-- Wedding Overview Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Wedding Overview
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-@Model.StatusBadgeColor">@Model.Status</span>
+                        <span>Wedding ID: @Model.CoupleProfileId</span>
+                    </div>
+                    
+                    <dl class="row">
+                        <dt class="col-sm-5">Couple:</dt>
+                        <dd class="col-sm-7">@Model.CoupleName</dd>
+                        
+                        <dt class="col-sm-5">Wedding Date:</dt>
+                        <dd class="col-sm-7">@Model.WeddingDate.ToString("MMMM dd, yyyy")</dd>
+                        
+                        <dt class="col-sm-5">Days Until:</dt>
+                        <dd class="col-sm-7">@Model.DaysUntilWedding</dd>
+                        
+                        <dt class="col-sm-5">Venue:</dt>
+                        <dd class="col-sm-7">@(Model.VenueName ?? "Not set")</dd>
+                        
+                        <dt class="col-sm-5">Contact:</dt>
+                        <dd class="col-sm-7">
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#messageModal">
+                                <i class="fas fa-envelope me-1"></i> Message Couple
+                            </a>
+                        </dd>
+                    </dl>
+
+                    <a asp-action="EditWeddingDetails" asp-route-id="@Model.CoupleProfileId" class="btn btn-primary btn-sm float-end">
+                        <i class="fas fa-edit me-1"></i> Edit Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checklist Progress Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-tasks me-1"></i>
+                    Checklist Progress
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar" role="progressbar" style="width: @Model.ChecklistProgressPercentage%;" 
+                             aria-valuenow="@Model.ChecklistProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                            @Model.ChecklistProgressPercentage%
+                        </div>
+                    </div>
+                    
+                    <p>@Model.CompletedChecklistItems of @Model.TotalChecklistItems tasks completed</p>
+                    
+                    @if (Model.RecentChecklistItems != null && Model.RecentChecklistItems.Any())
+                    {
+                        <h6>Recent Tasks:</h6>
+                        <ul class="list-group">
+                            @foreach (var item in Model.RecentChecklistItems)
+                            {
+                                <li class="list-group-item @(item.IsCompleted ? "list-group-item-success" : "")">
+                                    @if (item.IsCompleted)
+                                    {
+                                        <i class="fas fa-check-circle me-2 text-success"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-circle me-2 text-muted"></i>
+                                    }
+                                    @item.Title
+                                    <small class="d-block text-muted">Due: @(item.DueDate?.ToString("MMM dd, yyyy") ?? "No date set")</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No checklist items found.</p>
+                    }
+                    
+                    <div class="mt-3">
+                        <a asp-action="ManageChecklists" asp-route-id="@Model.CoupleProfileId" class="btn btn-primary">
+                            <i class="fas fa-list-check me-1"></i> Manage Checklists
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Budget Overview Card -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-money-bill me-1"></i>
+                    Budget Overview
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h6>Total Budget</h6>
+                            <h4>@Model.Budget.ToString("C0")</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6>Spent</h6>
+                            <h4>@Model.BudgetUtilized.ToString("C0")</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar @(Model.BudgetUtilizationPercentage > 100 ? "bg-danger" : "")" 
+                             role="progressbar" style="width: @Math.Min(Model.BudgetUtilizationPercentage, 100)%;" 
+                             aria-valuenow="@Model.BudgetUtilizationPercentage" aria-valuemin="0" aria-valuemax="100">
+                            @Model.BudgetUtilizationPercentage%
+                        </div>
+                    </div>
+                    
+                    @if (Model.BudgetCategories != null && Model.BudgetCategories.Any())
+                    {
+                        <h6>Top Budget Categories:</h6>
+                        <ul class="list-group">
+                            @foreach (var category in Model.BudgetCategories)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @category.Name
+                                    <span>
+                                        <span class="badge bg-primary rounded-pill me-2">@category.TotalSpent.ToString("C0")</span>
+                                        <span class="text-muted">of @category.AllocatedAmount.ToString("C0")</span>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No budget categories found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <!-- Guest List Card -->
+        <div class="col-xl-6 col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-users me-1"></i>
+                    Guest List Summary
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-3">
+                            <h6>Total</h6>
+                            <h4>@Model.TotalGuests</h4>
+                        </div>
+                        <div class="col-3">
+                            <h6>Attending</h6>
+                            <h4>@Model.AttendingGuests</h4>
+                        </div>
+                        <div class="col-3">
+                            <h6>Declined</h6>
+                            <h4>@Model.DeclinedGuests</h4>
+                        </div>
+                        <div class="col-3">
+                            <h6>Pending</h6>
+                            <h4>@Model.PendingGuests</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-list me-1"></i> View Guest List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline Card -->
+        <div class="col-xl-6 col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-calendar me-1"></i>
+                    Wedding Timeline
+                </div>
+                <div class="card-body">
+                    @if (Model.WeddingEvents != null && Model.WeddingEvents.Any())
+                    {
+                        <div class="timeline">
+                            @foreach (var evt in Model.WeddingEvents)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-item-content">
+                                        <span class="tag">@evt.StartTime.ToString("h:mm tt")</span>
+                                        <h5>@evt.Title</h5>
+                                        <p>@evt.Description</p>
+                                        <span class="circle"></span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No timeline events found.</p>
+                    }
+                    
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i> Manage Timeline
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Send Message to @Model.CoupleName</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Messages" asp-action="SendMessage" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="recipientId" value="@Model.CoupleUserId" />
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageContent" class="form-label">Message</label>
+                        <textarea class="form-control" id="messageContent" name="messageContent" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Timeline styling */
+.timeline {
+    margin: 0 auto;
+    position: relative;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: #dee2e6;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    margin-left: -1px;
+}
+
+.timeline-item {
+    padding: 10px 40px 10px 40px;
+    position: relative;
+}
+
+.timeline-item-content {
+    position: relative;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.timeline-item-content .tag {
+    font-size: 0.8rem;
+    background-color: #6c757d;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 15px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.timeline-item-content .circle {
+    background-color: white;
+    border: 3px solid #007bff;
+    border-radius: 50%;
+    position: absolute;
+    top: 20px;
+    left: -48px;
+    width: 16px;
+    height: 16px;
+    z-index: 1;
+}
+</style>
