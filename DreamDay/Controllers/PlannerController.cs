@@ -37,7 +37,7 @@ namespace DreamDay.Controllers
         }
 
         // GET: Planner/Dashboard
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Index()
         {
             await _userProfileRepository.InitializeAsync();
             var currentUser = _userProfileRepository.CurrentUser;
